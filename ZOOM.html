@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoom Phone - Call Center Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Using Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Lighter gray background */
+        }
+        /* Status indicators using Font Awesome */
+        .status-icon { width: 1.25em; text-align: center; margin-right: 6px; } /* Ensure consistent width */
+        .status-available { color: #16a34a; } /* green-600 */
+        .status-on-call { color: #dc2626; } /* red-600 */
+        .status-busy { color: #f97316; } /* orange-500 */
+        .status-in-meeting { color: #2563eb; } /* blue-600 */
+        .status-offline { color: #6b7280; } /* gray-500 */
+
+        /* Ensure content doesn't get hidden behind fixed header */
+        body { padding-top: 64px; } /* Adjust if header height changes */
+
+        /* Responsive grid */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; /* Increased gap */ }
+        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: 2fr 1fr; } }
+        @media (min-width: 1280px) { .dashboard-grid { grid-template-columns: 3fr 2fr 2fr; } } /* Add 3-column layout for wider screens */
+
+
+        /* Drag and drop styles */
+        .site-section { cursor: grab; border: 1px solid #e5e7eb; /* light border */ transition: border-color 0.2s ease-in-out, opacity 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        .site-section:hover { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1); } /* Subtle shadow on hover */
+        .site-section.dragging { cursor: grabbing; opacity: 0.6; border-color: #3b82f6; /* blue-500 */ box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
+        .drag-over { border-top: 2px dashed #3b82f6; /* blue-500 */ }
+
+        /* Collapse/Expand Indicator */
+        .toggle-icon { transition: transform 0.2s ease-in-out; }
+        .site-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background-color: #f9fafb; border-bottom: 1px solid #e5e7eb; } /* Header styling */
+        .site-header:hover .toggle-icon { color: #3b82f6; }
+        .site-header .toggle-icon.collapsed { transform: rotate(-90deg); }
+        .user-list.hidden { display: none; }
+        .user-list { padding: 0.75rem; } /* Padding for user list */
+
+        /* Clickable user item */
+        .user-item { cursor: pointer; transition: background-color 0.15s ease-in-out; }
+        .user-item:hover { background-color: #e5e7eb; /* gray-200 */ }
+
+        /* Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 50; opacity: 0; transition: opacity 0.2s ease-in-out; pointer-events: none; }
+        .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+        .modal-content { background-color: white; padding: 1.5rem 2rem 2rem 2rem; border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); min-width: 350px; max-width: 500px; transform: scale(0.95); transition: transform 0.2s ease-in-out; }
+        .modal-overlay.visible .modal-content { transform: scale(1); }
+        .modal-close-btn { position: absolute; top: 0.5rem; right: 0.75rem; background: none; border: none; font-size: 1.75rem; line-height: 1; cursor: pointer; color: #9ca3af; transition: color 0.2s ease; } /* gray-400 */
+        .modal-close-btn:hover { color: #374151; } /* gray-700 */
+
+        /* Summary Stats */
+        .stat-card { background-color: white; padding: 1rem; border-radius: 0.375rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); text-align: center; }
+        .stat-value { font-size: 1.875rem; /* text-3xl */ font-semibold; color: #1f2937; /* gray-800 */ }
+        .stat-label { font-size: 0.875rem; /* text-sm */ color: #6b7280; /* gray-500 */ margin-top: 0.25rem; }
+
+        /* Search Input */
+        .search-input { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+        .search-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4); outline: none; }
+
+        /* Loading Overlay */
+        .loading-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255, 255, 255, 0.7); display: flex; justify-content: center; align-items: center; z-index: 10; }
+        .loading-overlay.hidden { display: none; }
+
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+    <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-30 h-16 flex items-center">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-xl font-semibold text-gray-800 flex items-center">
+                <i class="fas fa-headset mr-2 text-blue-600"></i> Call Center Dashboard
+            </h1>
+            <div class="text-sm text-gray-600">
+                Last Updated: <span id="last-updated">--:--:--</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 mt-4">
+
+        <section id="summary-stats" class="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-total-users">0</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-available-users">0</div>
+                <div class="stat-label">Available Users</div>
+            </div>
+             <div class="stat-card">
+                <div class="stat-value" id="stat-on-call-users">0</div>
+                <div class="stat-label">On Call</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-active-calls">0</div>
+                <div class="stat-label">Active Calls</div>
+            </div>
+        </section>
+
+        <div class="dashboard-grid">
+
+            <div class="bg-white rounded-lg shadow space-y-4 relative overflow-hidden">
+                 <div class="p-4 border-b">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-3">User Status by Site</h2>
+                    <input type="text" id="user-search" placeholder="Search users by name or ext..."
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm search-input">
+                 </div>
+                <div id="sites-container" class="space-y-1 p-4 pt-0 max-h-[65vh] overflow-y-auto">
+                    <p class="text-gray-500 p-4 text-center">Loading user data...</p>
+                </div>
+                 <div id="users-loading" class="loading-overlay hidden">
+                     <i class="fas fa-spinner fa-spin text-blue-500 text-3xl"></i>
+                 </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-lg shadow space-y-4">
+                <h2 class="text-lg font-semibold text-gray-700 border-b pb-2 mb-2">Active Calls</h2>
+                <div id="active-calls-container" class="space-y-3 max-h-[70vh] overflow-y-auto">
+                    <p class="text-gray-500">Loading active calls...</p>
+                </div>
+            </div>
+
+             <div class="bg-white p-4 rounded-lg shadow space-y-4">
+                <h2 class="text-lg font-semibold text-gray-700 border-b pb-2 mb-2">Call Queues</h2>
+                <div id="call-queues-container" class="space-y-3 max-h-[70vh] overflow-y-auto">
+                    <p class="text-gray-500">Loading queue data...</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="user-modal" class="modal-overlay">
+        <div class="modal-content relative">
+            <button id="modal-close" class="modal-close-btn" aria-label="Close modal">&times;</button>
+            <div class="flex items-center mb-4">
+                 <span id="modal-status-icon" class="status-icon text-2xl mr-3"><i class="fas fa-question-circle"></i></span>
+                 <h3 class="text-xl font-semibold" id="modal-user-name">User Name</h3>
+            </div>
+
+            <div class="space-y-2 text-sm mb-6 border-t pt-4">
+                <p><strong>Status:</strong> <span id="modal-user-status" class="font-medium">--</span></p>
+                <p><strong>Extension:</strong> <span id="modal-user-extension">--</span></p>
+                <p><strong>Email:</strong> <span id="modal-user-email">--</span></p>
+                <p><strong>Site:</strong> <span id="modal-user-site">--</span></p>
+                <p><strong>User ID:</strong> <span id="modal-user-id" class="text-gray-400 text-xs">--</span></p>
+            </div>
+             <div class="flex justify-end space-x-3 border-t pt-4">
+                 <button class="px-4 py-2 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition duration-150 ease-in-out disabled:opacity-50" disabled>
+                     <i class="fas fa-phone mr-1"></i> Call Ext
+                 </button>
+                  <button class="px-4 py-2 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition duration-150 ease-in-out disabled:opacity-50" disabled>
+                     <i class="fas fa-comment mr-1"></i> Start Chat
+                 </button>
+                 <button id="modal-cancel" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 transition duration-150 ease-in-out">
+                     Close
+                 </button>
+             </div>
+        </div>
+    </div>
+
+    <script>
+        // --- MOCK DATA ---
+        let mockSites = [ { id: 'site01', name: 'Headquarters' }, { id: 'site02', name: 'Branch Office Alpha' }, { id: 'site03', name: 'Support Center' }, ];
+        let mockUsers = [ { id: 'user001', name: 'Alice Smith', email: 'alice@example.com', extension: '101', siteId: 'site01', status: 'Available' }, { id: 'user002', name: 'Bob Johnson', email: 'bob@example.com', extension: '102', siteId: 'site01', status: 'On Call' }, { id: 'user003', name: 'Charlie Brown', email: 'charlie@example.com', extension: '201', siteId: 'site02', status: 'Busy' }, { id: 'user004', name: 'Diana Prince', email: 'diana@example.com', extension: '103', siteId: 'site01', status: 'In Meeting' }, { id: 'user005', name: 'Ethan Hunt', email: 'ethan@example.com', extension: '301', siteId: 'site03', status: 'Available' }, { id: 'user006', name: 'Fiona Glenanne', email: 'fiona@example.com', extension: '202', siteId: 'site02', status: 'On Call' }, { id: 'user007', name: 'George Costanza', email: 'george@example.com', extension: '302', siteId: 'site03', status: 'Offline' }, { id: 'user008', name: 'Hannah Abbott', email: 'hannah@example.com', extension: '104', siteId: 'site01', status: 'Available' }, { id: 'user009', name: 'Isaac Newton', email: 'isaac@example.com', extension: '105', siteId: 'site01', status: 'Available' }, { id: 'user010', name: 'Jane Doe', email: 'jane@example.com', extension: '203', siteId: 'site02', status: 'Available' }, ];
+        let mockActiveCalls = [ { callId: 'call_abc', participants: ['Bob Johnson', '+15551234567'], startTime: Date.now() - 120000, direction: 'Outbound' }, { callId: 'call_def', participants: ['Fiona Glenanne', 'Sales Queue'], startTime: Date.now() - 30000, direction: 'Inbound' }, ];
+        let mockCallQueues = [ { id: 'q01', name: 'Sales Queue', callsWaiting: 2, longestWait: 185, agentsAvailable: 3, agentsBusy: 2 }, { id: 'q02', name: 'Support Queue', callsWaiting: 0, longestWait: 0, agentsAvailable: 5, agentsBusy: 1 }, { id: 'q03', name: 'Billing Queue', callsWaiting: 1, longestWait: 45, agentsAvailable: 1, agentsBusy: 1 }, ];
+
+        // --- DOM Elements ---
+        const sitesContainer = document.getElementById('sites-container');
+        const activeCallsContainer = document.getElementById('active-calls-container');
+        const callQueuesContainer = document.getElementById('call-queues-container');
+        const lastUpdatedSpan = document.getElementById('last-updated');
+        const userModal = document.getElementById('user-modal');
+        const modalCloseBtn = document.getElementById('modal-close');
+        const modalCancelBtn = document.getElementById('modal-cancel'); // Added cancel button
+        const modalUserName = document.getElementById('modal-user-name');
+        const modalUserStatus = document.getElementById('modal-user-status');
+        const modalStatusIcon = document.getElementById('modal-status-icon');
+        const modalUserExtension = document.getElementById('modal-user-extension');
+        const modalUserEmail = document.getElementById('modal-user-email');
+        const modalUserSite = document.getElementById('modal-user-site');
+        const modalUserId = document.getElementById('modal-user-id');
+        const statTotalUsers = document.getElementById('stat-total-users');
+        const statAvailableUsers = document.getElementById('stat-available-users');
+        const statOnCallUsers = document.getElementById('stat-on-call-users');
+        const statActiveCalls = document.getElementById('stat-active-calls');
+        const userSearchInput = document.getElementById('user-search');
+        const usersLoading = document.getElementById('users-loading');
+        let draggedItem = null;
+        let isFetching = false;
+
+        // --- Helper Functions ---
+        function getStatusInfo(status) {
+            switch (status) {
+                case 'Available': return { class: 'status-available', icon: 'fa-circle-check' };
+                case 'On Call': return { class: 'status-on-call', icon: 'fa-phone-volume' };
+                case 'Busy': return { class: 'status-busy', icon: 'fa-circle-minus' }; // DND or Busy
+                case 'In Meeting': return { class: 'status-in-meeting', icon: 'fa-video' };
+                case 'Offline': return { class: 'status-offline', icon: 'fa-circle-xmark' };
+                default: return { class: 'status-offline', icon: 'fa-circle-question' };
+            }
+        }
+        function formatDuration(startTime, showSeconds = true) {
+            const now = Date.now();
+            const durationSeconds = Math.max(0, Math.floor((now - startTime) / 1000));
+            const minutes = Math.floor(durationSeconds / 60);
+            const seconds = durationSeconds % 60;
+            if (showSeconds) {
+                return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                 return `${minutes}m ${seconds}s`; // Alternative format
+            }
+        }
+         function formatQueueWaitTime(seconds) {
+             if (seconds <= 0) return '0s';
+             const minutes = Math.floor(seconds / 60);
+             const remainingSeconds = seconds % 60;
+             return `${minutes}m ${remainingSeconds}s`;
+         }
+
+        // --- Rendering Functions ---
+        function renderUsers(filter = '') {
+            const siteStates = {};
+            sitesContainer.querySelectorAll('.site-section').forEach(section => {
+                const siteId = section.dataset.siteId;
+                const userList = section.querySelector('.user-list');
+                if (siteId && userList) {
+                    siteStates[siteId] = userList.classList.contains('hidden');
+                }
+            });
+
+            sitesContainer.innerHTML = ''; // Clear previous content
+            const filterLower = filter.toLowerCase();
+            let usersDisplayed = 0;
+
+            if (!mockUsers.length || !mockSites.length) {
+                sitesContainer.innerHTML = '<p class="text-gray-500 p-4 text-center">No user or site data available.</p>';
+                return;
+            }
+
+            mockSites.forEach(site => {
+                const usersInSite = mockUsers.filter(user => {
+                    return user.siteId === site.id &&
+                           (filter === '' ||
+                            user.name.toLowerCase().includes(filterLower) ||
+                            (user.extension && user.extension.includes(filterLower)));
+                });
+
+                // Only render the site section if it has users matching the filter OR if filter is empty
+                if (usersInSite.length > 0 || filter === '') {
+                    const siteSection = document.createElement('div');
+                    siteSection.className = 'mb-1 rounded-md bg-white site-section'; // Adjusted margin
+                    siteSection.draggable = true;
+                    siteSection.dataset.siteId = site.id;
+
+                    const siteHeader = document.createElement('h3');
+                    siteHeader.className = 'text-md font-semibold text-blue-700 site-header rounded-t-md'; // Added rounding
+                    const isCollapsed = siteStates[site.id] === true;
+                    const statusIconInfo = getStatusInfo(''); // Placeholder for icon class
+                    siteHeader.innerHTML = `
+                        <span>${site.name}</span>
+                        <span class="toggle-icon ${isCollapsed ? 'collapsed' : ''}"><i class="fas fa-chevron-down fa-xs"></i></span>
+                    `;
+                    siteSection.appendChild(siteHeader);
+
+                    const userList = document.createElement('ul');
+                    userList.className = 'space-y-1 user-list'; // Adjusted spacing
+                    if (isCollapsed) { userList.classList.add('hidden'); }
+
+                    if (usersInSite.length === 0 && filter !== '') {
+                         // Show message only if filtering resulted in no users for this site
+                        const noUsersItem = document.createElement('li');
+                        noUsersItem.className = 'text-sm text-gray-500 italic p-2';
+                        noUsersItem.textContent = 'No matching users in this site.';
+                        userList.appendChild(noUsersItem);
+                    } else {
+                         usersInSite.forEach(user => {
+                            usersDisplayed++;
+                            const userItem = document.createElement('li');
+                            userItem.className = 'flex items-center justify-between text-sm p-2 rounded hover:bg-gray-100 user-item';
+                            userItem.dataset.userId = user.id;
+                            const statusInfo = getStatusInfo(user.status);
+                            userItem.innerHTML = `
+                                <div class="flex items-center overflow-hidden mr-2">
+                                    <span class="${statusInfo.class} status-icon" title="${user.status}"><i class="fas ${statusInfo.icon}"></i></span>
+                                    <span class="font-medium text-gray-800 truncate" title="${user.name}">${user.name}</span>
+                                    <span class="ml-2 text-gray-500 text-xs flex-shrink-0">(Ext: ${user.extension || 'N/A'})</span>
+                                </div>
+                                <span class="text-gray-600 font-medium text-xs flex-shrink-0">${user.status}</span>
+                            `;
+                            userList.appendChild(userItem);
+                            userItem.addEventListener('click', () => showUserDetails(user.id));
+                        });
+                    }
+
+                    siteSection.appendChild(userList);
+                    sitesContainer.appendChild(siteSection);
+
+                    addDragDropListeners(siteSection);
+                    addCollapseListeners(siteHeader, userList);
+                }
+            });
+             if (sitesContainer.children.length === 0 && filter !== '') {
+                 sitesContainer.innerHTML = `<p class="text-gray-500 p-4 text-center">No users found matching "${filter}".</p>`;
+             } else if (sitesContainer.children.length === 0 && filter === '') {
+                  sitesContainer.innerHTML = '<p class="text-gray-500 p-4 text-center">No users to display.</p>';
+             }
+        }
+
+        function renderActiveCalls() {
+            activeCallsContainer.innerHTML = '';
+            if (mockActiveCalls.length === 0) {
+                activeCallsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No active calls.</p>';
+                return;
+            }
+            mockActiveCalls.forEach(call => {
+                const callItem = document.createElement('div');
+                callItem.className = 'border border-gray-200 p-3 rounded-lg bg-white text-sm shadow-sm'; // Enhanced styling
+                const directionIcon = call.direction === 'Inbound' ? 'fa-arrow-down' : 'fa-arrow-up';
+                const directionColor = call.direction === 'Inbound' ? 'text-blue-600' : 'text-green-600';
+                callItem.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-semibold text-gray-800 truncate mr-2" title="${call.participants.join(' ↔ ')}">${call.participants.join(' ↔ ')}</span>
+                        <span class="text-xs px-2 py-0.5 rounded flex items-center ${call.direction === 'Inbound' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}">
+                           <i class="fas ${directionIcon} ${directionColor} mr-1 fa-xs"></i> ${call.direction}
+                        </span>
+                    </div>
+                    <div class="text-gray-600">
+                        <i class="far fa-clock mr-1 text-gray-400"></i> Duration: <span class="font-medium text-red-600">${formatDuration(call.startTime)}</span>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1 truncate" title="Call ID: ${call.callId}">Call ID: ${call.callId}</div>
+                `;
+                activeCallsContainer.appendChild(callItem);
+            });
+        }
+
+         function renderCallQueues() {
+             callQueuesContainer.innerHTML = '';
+             if (mockCallQueues.length === 0) {
+                 callQueuesContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No call queues defined.</p>';
+                 return;
+             }
+             mockCallQueues.forEach(queue => {
+                 const queueItem = document.createElement('div');
+                 queueItem.className = 'border border-gray-200 p-3 rounded-lg bg-white text-sm shadow-sm space-y-1';
+                 const waitTimeColor = queue.callsWaiting > 0 ? (queue.longestWait > 180 ? 'text-red-600' : 'text-orange-500') : 'text-gray-500';
+                 queueItem.innerHTML = `
+                     <div class="font-semibold text-gray-800">${queue.name}</div>
+                     <div class="flex justify-between text-xs">
+                         <span class="text-gray-600"><i class="fas fa-phone-alt mr-1 text-blue-500"></i> Calls Waiting:</span>
+                         <span class="font-medium ${queue.callsWaiting > 0 ? 'text-blue-600' : 'text-gray-500'}">${queue.callsWaiting}</span>
+                     </div>
+                     <div class="flex justify-between text-xs">
+                         <span class="text-gray-600"><i class="fas fa-hourglass-half mr-1 ${waitTimeColor}"></i> Longest Wait:</span>
+                         <span class="font-medium ${waitTimeColor}">${formatQueueWaitTime(queue.longestWait)}</span>
+                     </div>
+                      <div class="flex justify-between text-xs">
+                         <span class="text-gray-600"><i class="fas fa-user-check mr-1 text-green-500"></i> Agents Available:</span>
+                         <span class="font-medium text-green-600">${queue.agentsAvailable}</span>
+                     </div>
+                     <div class="flex justify-between text-xs">
+                         <span class="text-gray-600"><i class="fas fa-user-clock mr-1 text-red-500"></i> Agents Busy:</span>
+                         <span class="font-medium text-red-600">${queue.agentsBusy}</span>
+                     </div>
+                 `;
+                 callQueuesContainer.appendChild(queueItem);
+             });
+         }
+
+
+        function updateSummaryStats() {
+            statTotalUsers.textContent = mockUsers.length;
+            statAvailableUsers.textContent = mockUsers.filter(u => u.status === 'Available').length;
+            statOnCallUsers.textContent = mockUsers.filter(u => u.status === 'On Call').length;
+            statActiveCalls.textContent = mockActiveCalls.length;
+        }
+
+        function updateLastUpdatedTime() {
+             const now = new Date();
+             lastUpdatedSpan.textContent = now.toLocaleTimeString();
+        }
+
+        // --- Modal Functions ---
+        function showUserDetails(userId) {
+            const user = mockUsers.find(u => u.id === userId);
+            const site = mockSites.find(s => s.id === user?.siteId);
+
+            if (user) {
+                const statusInfo = getStatusInfo(user.status);
+                modalUserName.textContent = user.name;
+                modalUserStatus.textContent = user.status;
+                modalStatusIcon.className = `status-icon text-2xl mr-3 ${statusInfo.class}`;
+                modalStatusIcon.innerHTML = `<i class="fas ${statusInfo.icon}"></i>`;
+                // modalUserStatus.className = `font-medium ${statusInfo.class}`; // Color applied via icon now
+                modalUserExtension.textContent = user.extension || 'N/A';
+                modalUserEmail.textContent = user.email || 'N/A';
+                modalUserSite.textContent = site ? site.name : 'Unknown';
+                modalUserId.textContent = user.id;
+
+                userModal.classList.add('visible'); // Use class for transition
+            }
+        }
+
+        function hideUserDetails() {
+            userModal.classList.remove('visible');
+        }
+
+        // --- Event Listener Setup ---
+        function addCollapseListeners(headerElement, listElement) {
+            headerElement.addEventListener('click', (e) => {
+                 if (e.target === headerElement || headerElement.contains(e.target)) {
+                     const isHidden = listElement.classList.toggle('hidden');
+                     const iconElement = headerElement.querySelector('.toggle-icon i');
+                     const iconContainer = headerElement.querySelector('.toggle-icon');
+                     if (iconElement) {
+                         iconContainer.classList.toggle('collapsed', isHidden);
+                         // Optional: Change icon if desired
+                         // iconElement.className = `fas ${isHidden ? 'fa-chevron-right' : 'fa-chevron-down'} fa-xs`;
+                     }
+                 }
+             });
+        }
+        function addDragDropListeners(element) { /* ... (same as before) ... */
+            element.addEventListener('dragstart', handleDragStart);
+            element.addEventListener('dragover', handleDragOver);
+            element.addEventListener('dragleave', handleDragLeave);
+            element.addEventListener('drop', handleDrop);
+            element.addEventListener('dragend', handleDragEnd);
+        }
+
+        // Modal close listeners
+        modalCloseBtn.addEventListener('click', hideUserDetails);
+        modalCancelBtn.addEventListener('click', hideUserDetails); // Also close on cancel
+        userModal.addEventListener('click', (e) => { if (e.target === userModal) { hideUserDetails(); } });
+
+        // Search listener
+        userSearchInput.addEventListener('input', (e) => {
+            renderUsers(e.target.value);
+        });
+
+        // --- Drag and Drop Handlers ---
+        function handleDragStart(e) { /* ... (same as before) ... */
+             if (e.target.classList.contains('toggle-icon') || e.target.closest('.toggle-icon')) {
+                 e.preventDefault(); return;
+            }
+            draggedItem = this; this.classList.add('dragging');
+        }
+        function handleDragOver(e) { /* ... (same as before) ... */ e.preventDefault(); this.classList.add('drag-over'); }
+        function handleDragLeave(e) { /* ... (same as before) ... */ this.classList.remove('drag-over'); }
+        function handleDrop(e) { /* ... (same as before) ... */
+             e.preventDefault(); this.classList.remove('drag-over');
+             if (draggedItem && draggedItem !== this) {
+                 const container = sitesContainer; const targetRect = this.getBoundingClientRect(); const mouseOffsetY = e.clientY - targetRect.top;
+                 if (mouseOffsetY < targetRect.height / 2) { container.insertBefore(draggedItem, this); } else { container.insertBefore(draggedItem, this.nextSibling); }
+                 updateMockSitesOrder();
+             }
+        }
+        function handleDragEnd(e) { /* ... (same as before) ... */
+             if (draggedItem) { draggedItem.classList.remove('dragging'); }
+             draggedItem = null; sitesContainer.querySelectorAll('.site-section').forEach(el => el.classList.remove('drag-over'));
+        }
+
+        // --- Utility to update mock data order ---
+        function updateMockSitesOrder() { /* ... (same as before) ... */
+            const orderedSiteIds = Array.from(sitesContainer.querySelectorAll('.site-section')).map(el => el.dataset.siteId);
+            mockSites.sort((a, b) => orderedSiteIds.indexOf(a.id) - orderedSiteIds.indexOf(b.id));
+            // console.log("Updated mockSites order:", mockSites.map(s => s.name));
+        }
+
+        // --- Initialization and Simulation ---
+        async function fetchData() {
+            if (isFetching) return; // Prevent concurrent fetches
+            isFetching = true;
+            usersLoading.classList.remove('hidden'); // Show loading indicator
+            console.log("Simulating data fetch...");
+
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 400));
+
+            simulateUpdates(); // Simulate potential changes
+
+            // Render everything
+            renderUsers(userSearchInput.value); // Apply current filter
+            renderActiveCalls();
+            renderCallQueues();
+            updateSummaryStats();
+            updateLastUpdatedTime();
+
+            usersLoading.classList.add('hidden'); // Hide loading indicator
+            isFetching = false;
+        }
+
+        function simulateUpdates() { /* ... (same as before - status changes, calls added/removed) ... */
+             if (mockUsers.length > 0 && Math.random() < 0.15) { const userIndex = Math.floor(Math.random() * mockUsers.length); const statuses = ['Available', 'On Call', 'Busy', 'In Meeting', 'Offline']; const currentStatus = mockUsers[userIndex].status; let newStatus; do { newStatus = statuses[Math.floor(Math.random() * statuses.length)]; } while (newStatus === currentStatus); mockUsers[userIndex].status = newStatus; if(newStatus === 'On Call' && !mockActiveCalls.some(call => call.participants.includes(mockUsers[userIndex].name))) { mockActiveCalls.push({ callId: `call_${Math.random().toString(36).substring(7)}`, participants: [mockUsers[userIndex].name, `External ${Math.floor(Math.random()*1000)}`], startTime: Date.now(), direction: Math.random() < 0.5 ? 'Inbound' : 'Outbound' }); } else if (currentStatus === 'On Call' && newStatus !== 'On Call') { const callIndex = mockActiveCalls.findIndex(call => call.participants.includes(mockUsers[userIndex].name)); if (callIndex !== -1) { mockActiveCalls.splice(callIndex, 1); } } }
+             if (mockActiveCalls.length > 0 && Math.random() < 0.1) { const callIndex = Math.floor(Math.random() * mockActiveCalls.length); const endingCall = mockActiveCalls.splice(callIndex, 1)[0]; endingCall.participants.forEach(pName => { const userIndex = mockUsers.findIndex(u => u.name === pName && u.status === 'On Call'); if (userIndex !== -1) { mockUsers[userIndex].status = 'Available'; } }); }
+             // Simulate queue changes
+             mockCallQueues.forEach(q => { if (Math.random() < 0.2) q.callsWaiting = Math.max(0, q.callsWaiting + (Math.random() < 0.5 ? 1 : -1)); if (q.callsWaiting > 0 && Math.random() < 0.3) q.longestWait += Math.floor(Math.random() * 10); else if (q.callsWaiting === 0) q.longestWait = 0; if (Math.random() < 0.1) q.agentsAvailable = Math.max(0, q.agentsAvailable + (Math.random() < 0.5 ? 1 : -1)); if (Math.random() < 0.1) q.agentsBusy = Math.max(0, q.agentsBusy + (Math.random() < 0.5 ? 1 : -1)); });
+        }
+
+        // Initial render
+        fetchData();
+
+        // Simulate fetching data every 5 seconds & update durations
+        setInterval(fetchData, 5000);
+        // Update call durations more frequently
+        setInterval(() => {
+             if (mockActiveCalls.length > 0) { renderActiveCalls(); } // Only re-render calls for duration
+             if (mockCallQueues.some(q => q.callsWaiting > 0)) { renderCallQueues(); } // Update queue wait times
+        }, 1000);
+
+    </script>
+
+</body>
+</html>
