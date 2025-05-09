@@ -21,18 +21,19 @@
   </Menu>
   <Menu Name="1: Wholesale Department">
     <Unit Name="0 Wholesale MAIN" Phone1="8000" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
-    <Unit Name="1 Wholesale Operator" Phone1="8001" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
+    <Unit Name="1 Operator" Phone1="8001" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="2 Accounts Receivable" Phone1="8002" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="3 Accounts Payable" Phone1="8003" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="4 Human Resources" Phone1="8004" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
-    <Unit Name="5 IT Support" Phone1="8005" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
-    <Unit Name="6 Door Shop" Phone1="8006" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
-    <Unit Name="7 Online Support" Phone1="8007" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
+    <Unit Name="5 Dispatch & Fleet" Phone1="8005" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
+    <Unit Name="6 Online Support" Phone1="8006" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
+    <Unit Name="7 IT Support" Phone1="8007" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="8 Purchasing" Phone1="8008" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="9 Sales" Phone1="8009" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
+    <Unit Name="A Door Shop" Phone1="8010" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>  
   </Menu>
   <Menu Name="3: Store Numbers">
-    <Unit Name="00: Wholesale" Phone1="8000" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
+    <Unit Name="00: Woodson Wholesale" Phone1="8000" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="01: Brenham Store" Phone1="1000" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="02: Bryan Store" Phone1="2000" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="03: Caldwell Store" Phone1="3000" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
