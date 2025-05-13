@@ -26,7 +26,7 @@
     <Unit Name="2 Accounts Receivable" Phone1="8002" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="3 Accounts Payable" Phone1="8003" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="4 Human Resources" Phone1="8004" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
-    <Unit Name="5 Dispatch & Fleet" Phone1="8005" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
+    <Unit Name="5 Dispatch &amp; Fleet" Phone1="8005" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="6 Online Support" Phone1="8006" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="7 IT Support" Phone1="8007" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
     <Unit Name="8 Purchasing" Phone1="8008" Phone2="" Phone3="" default_photo="Resource:Woodson.png"/>
