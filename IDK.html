@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interior Door Configurator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles */
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        html { scroll-behavior: smooth; } /* Add smooth scrolling */
+        .configurator-container { background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07); padding: 2rem; }
+         @media (min-width: 768px) { .configurator-container { padding: 2.5rem; } }
+        .price-update { transition: background-color 0.3s ease-in-out; }
+        .conditional-container.hidden, .option-container.hidden, #configurator-view.hidden, #list-view.hidden, #modal-overlay.hidden, #post-add-modal-overlay.hidden {
+            transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease, padding 0.3s ease, border 0.3s ease, visibility 0s linear 0.3s;
+            max-height: 0 !important; opacity: 0 !important; overflow: hidden !important; margin-top: 0 !important;
+            margin-bottom: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; border: none !important;
+            visibility: hidden;
+        }
+        #configurator-view, #list-view { transition: opacity 0.3s ease, visibility 0s linear 0s; opacity: 1; visibility: visible; max-height: none; }
+        .summary-item.hidden { display: none; }
+
+        /* --- Tab Styles --- */
+        .tab-container { display: flex; flex-wrap: wrap; border-bottom: 1px solid #e5e7eb; margin-bottom: 1.5rem; }
+        .tab-button { padding: 0.5rem 1rem; margin-right: 0.25rem; border: 1px solid transparent; border-bottom: none; border-radius: 0.375rem 0.375rem 0 0; cursor: pointer; background-color: transparent; color: #6b7280; font-weight: 600; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; white-space: nowrap; margin-bottom: -1px; }
+        .tab-button.active { background-color: #ffffff; color: #4f46e5; border-color: #e5e7eb #e5e7eb #ffffff; position: relative; z-index: 10; }
+        .tab-button:not(.active):hover { background-color: #f9fafb; color: #374151; border-color: #e5e7eb #e5e7eb transparent; }
+         .tab-button.disabled { opacity: 0.4; cursor: not-allowed; background-color: transparent; pointer-events: none; color: #9ca3af; }
+        .tab-content { display: none; padding: 1.5rem; border: 1px solid #e5e7eb; border-radius: 0 0.5rem 0.5rem 0.5rem; }
+        .tab-content.active { display: block; }
+
+        /* --- Clickable Option Styles --- */
+        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); gap: 0.75rem; }
+        .option-item { border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 0.75rem 0.5rem; text-align: center; cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease; background-color: #ffffff; display: flex; flex-direction: column; justify-content: space-between; }
+         .option-item.hidden { display: none; }
+        .option-item:hover { border-color: #a5b4fc; background-color: #f9fafb; }
+        .option-item:active:not(.selected) { transform: scale(0.98); }
+        .option-item.selected { border-color: #4f46e5; background-color: #eef2ff; box-shadow: 0 0 0 2px #c7d2fe; position: relative; }
+         .option-item.disabled { opacity: 0.5; cursor: not-allowed; background-color: #f3f4f6; pointer-events: none; }
+        .option-item img { display: block; margin: 0 auto 0.5rem auto; height: 40px; width: auto; max-width: 100%; object-fit: contain; border-radius: 0.25rem; }
+        .option-item span { display: block; font-size: 0.75rem; color: #4b5563; line-height: 1.3; min-height: 2.6em; }
+         .option-item.selected span { font-weight: 600; color: #3730a3; }
+         .option-item.highlight { animation: highlight-blink 0.5s 2; border-color: #ef4444 !important; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4) !important; }
+         @keyframes highlight-blink { 50% { opacity: 0.5; } }
+
+        /* Input Field & Quantity Styles */
+        .input-field { margin-top: 0.25rem; display: block; width: 100%; border: 1px solid #d1d5db; border-radius: 0.5rem; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); padding: 0.5rem 0.75rem; font-size: 0.875rem; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+         .input-field:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        .quantity-control { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; }
+        .quantity-button { padding: 0.25rem; line-height: 1; width: 2rem; height: 2rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: #f9fafb; color: #4b5563; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; }
+        .quantity-button:hover { background-color: #f3f4f6; border-color: #9ca3af; }
+        .quantity-button:active { background-color: #e5e7eb; }
+        .quantity-input { width: 4rem; text-align: center; margin-top: 0; }
+
+        /* --- Prev/Next Navigation Styles --- */
+        .tab-navigation { display: flex; justify-content: space-between; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; }
+        .nav-button { padding: 0.625rem 1.25rem; border: 1px solid #d1d5db; border-radius: 0.5rem; background-color: #ffffff; color: #374151; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.1s ease; }
+        .nav-button:hover:not(:disabled) { background-color: #f9fafb; border-color: #9ca3af; }
+        .nav-button:active:not(:disabled) { transform: scale(0.98); box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
+        .nav-button:disabled { opacity: 0.5; cursor: not-allowed; background-color: #f9fafb; }
+        .nav-button.next-tab { background-color: #4f46e5; color: #ffffff; border-color: #4f46e5; }
+        .nav-button.next-tab:hover:not(:disabled) { background-color: #4338ca; border-color: #4338ca; }
+        .nav-button.next-tab:disabled { background-color: #a5b4fc; border-color: #a5b4fc; opacity: 0.6; }
+
+        /* --- Door Preview Styles --- */
+        #door-preview-container { display: flex; justify-content: center; align-items: center; padding: 1.5rem; background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.75rem; min-height: 320px; margin-bottom: 1.5rem; }
+        #door-preview { width: 140px; height: 280px; border: 2px solid #9ca3af; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-around; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); border-radius: 6px; background-color: #e5e7eb; }
+        .door-panel { border: 1px solid rgba(0, 0, 0, 0.1); background-color: rgba(255, 255, 255, 0.15); margin: 10px; border-radius: 4px; flex-grow: 1; display: flex; justify-content: space-around; align-items: center; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
+        .door-panel-inner { border: 1px solid rgba(0, 0, 0, 0.08); height: 90%; flex-basis: 40%; border-radius: 3px; background-color: rgba(255, 255, 255, 0.1); }
+        .door-style-flush, .door-style-molded_carrara {}
+        .door-style-paneled_2, .door-style-molded_cambridge, .door-style-roman, .door-style-santa_fe, .door-style-rockport { height: 40%; }
+        .door-style-paneled_6, .door-style-molded_colonist_smooth, .door-style-molded_colonist_textured, .door-style-madison { height: 28%; }
+        .door-style-craftsman_iii, .door-style-birkdale, .door-style-conmore, .door-style-shaker_3, .door-style-shaker_3_craftsman { height: 28%; }
+        .door-style-shaker_5 { height: 18%; }
+        .door-style-shaker_1 { }
+        .door-style-french .door-panel { background-color: #e0f2fe; border: 1px solid #bae6fd; margin: 12px; }
+
+        /* --- Summary Section (Now in Tab) --- */
+        .summary-container { background-color: #ffffff; padding: 0; border: none; border-radius: 0; }
+        .summary-group h4 { font-weight: 600; color: #1f2937; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb; }
+        .summary-list { max-height: none; overflow-y: visible; padding-right: 0; }
+        .summary-item { padding-bottom: 0.5rem; border-bottom: 1px dashed #e5e7eb; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .summary-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .summary-item strong { color: #374151; flex-shrink: 0; margin-right: 0.5rem; }
+        .summary-item span { color: #4f46e5; font-weight: 500; text-align: right; }
+        .summary-item span.placeholder { color: #9ca3af; font-style: italic; }
+
+        /* --- Configuration List Styles --- */
+        #config-list-section { margin-top: 2rem; }
+        .config-list-item { background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+        .config-list-item-details { flex-grow: 1; }
+        .config-list-item-details strong { font-weight: 600; color: #1f2937; }
+        .config-list-item-details span { color: #4b5563; }
+        .config-list-item-actions { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; }
+        .config-list-button { padding: 0.25rem 0.75rem; font-size: 0.75rem; border-radius: 0.375rem; border: 1px solid transparent; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; }
+        .edit-button { background-color: #dbeafe; color: #1e3a8a; border-color: #bfdbfe; }
+        .edit-button:hover { background-color: #bfdbfe; }
+        .remove-button { background-color: #fee2e2; color: #991b1b; border-color: #fecaca; }
+        .remove-button:hover { background-color: #fecaca; }
+
+        /* Action Button Styles */
+        .action-button { display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background-color: #10b981; color: #ffffff; font-weight: 600; border-radius: 0.5rem; text-align: center; cursor: pointer; transition: background-color 0.2s ease; border: none; }
+        .action-button:hover:not(:disabled) { background-color: #059669; }
+        .action-button.update-mode { background-color: #f97316; }
+        .action-button.update-mode:hover:not(:disabled) { background-color: #ea580c; }
+        .action-button:disabled { background-color: #a1a1aa; cursor: not-allowed; }
+        .action-button.incomplete { background-color: #f59e0b; }
+        .action-button.incomplete:hover:not(:disabled) { background-color: #d97706; }
+        .view-list-button { background-color: #64748b; margin-left: 0.5rem; }
+        .view-list-button:hover:not(:disabled) { background-color: #475569; }
+        .back-button { background-color: #64748b; }
+        .back-button:hover:not(:disabled) { background-color: #475569; }
+
+         /* Modal Styles */
+        #modal-overlay, #post-add-modal-overlay { position: fixed; inset: 0; background-color: rgba(17, 24, 39, 0.6); display: flex; align-items: center; justify-content: center; z-index: 50; opacity: 1; visibility: visible; transition: opacity 0.3s ease, visibility 0s linear 0s; backdrop-filter: blur(4px); }
+        #modal-overlay.hidden, #post-add-modal-overlay.hidden { opacity: 0; visibility: hidden; transition-delay: 0.3s, 0s; }
+        .modal-content { background-color: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); max-width: 90%; width: 400px; text-align: center; transform: scale(1); transition: transform 0.3s ease; position: relative; }
+        #modal-overlay.hidden .modal-content, #post-add-modal-overlay.hidden .modal-content { transform: scale(0.95); }
+        .modal-content h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1f2937; }
+        .modal-content p { margin-bottom: 1.5rem; color: #4b5563; }
+        .modal-actions { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+        .modal-button { padding: 0.625rem 1.25rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s ease; border: 1px solid transparent; }
+        #modal-goto-button { background-color: #4f46e5; color: white; border-color: #4f46e5; }
+        #modal-goto-button:hover { background-color: #4338ca; }
+        #modal-autofill-button { background-color: #10b981; color: white; border-color: #10b981; }
+        #modal-autofill-button:hover { background-color: #059669; }
+        #modal-close-button, #post-add-modal-close-button { position: absolute; top: 0.75rem; right: 0.75rem; background: none; border: none; font-size: 1.5rem; color: #9ca3af; cursor: pointer; line-height: 1; padding: 0.25rem; }
+        #modal-close-button:hover, #post-add-modal-close-button:hover { color: #6b7280; }
+        /* Post-add modal specific buttons */
+        #post-add-more-button { background-color: #3b82f6; color: white; }
+        #post-add-more-button:hover { background-color: #2563eb; }
+        #post-add-view-list-button { background-color: #6b7280; color: white; }
+        #post-add-view-list-button:hover { background-color: #4b5563; }
+        #post-add-copy-button { background-color: #3b82f6; color: white; }
+        #post-add-copy-button:hover { background-color: #2563eb; }
+        #post-add-new-button { background-color: #6b7280; color: white; }
+        #post-add-new-button:hover { background-color: #4b5563; }
+
+    </style>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 p-4 md:p-8">
+    <div class="max-w-4xl mx-auto configurator-container">
+
+        <div id="configurator-view">
+            <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-4">Interior Door Configurator</h1>
+
+             <div class="tab-container mb-6">
+                 <button class="tab-button active" data-tab="product">Product Selection</button>
+                 <button class="tab-button" data-tab="size">Size</button>
+                 <button class="tab-button" data-tab="style" id="style-tab-button">Style</button>
+                 <button class="tab-button" data-tab="bore-hinge" id="bore-hinge-tab-button">Bore & Hinge</button>
+                 <button class="tab-button" data-tab="frame" id="frame-tab-button">Frame</button>
+                 <button class="tab-button" data-tab="custom-size" id="custom-size-tab-button">Custom Sizing</button>
+                 <button class="tab-button" data-tab="summary">Summary</button>
+             </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                     <div id="tab-content">
+                         <div class="tab-content active" id="tab-product"> <div class="space-y-6"> <div class="option-container" data-option-group="product-line"> <label class="block text-sm font-medium text-gray-700 mb-2">Product Line</label> <div class="options-grid grid-cols-3"> <div class="option-item" data-value="interior_door" data-text="Interior Door"><img src="https://placehold.co/80x40/e0f2fe/0891b2?text=Door" alt="Interior Door"><span>Interior Door</span></div> <div class="option-item" data-value="garage_door" data-text="House-to-Garage"><img src="https://placehold.co/80x40/e0f2fe/0891b2?text=Garage" alt="Garage Door"><span>House-to-Garage</span></div> <div class="option-item" data-value="frame_only" data-text="Frame Only"><img src="https://placehold.co/80x40/e0f2fe/0891b2?text=Frame" alt="Frame Only"><span>Frame Only</span></div> </div> </div> <div class="option-container" data-option-group="door-type"> <label class="block text-sm font-medium text-gray-700 mb-2">Door Type</label> <div class="options-grid"> <div class="option-item hidden" data-product-line="interior_door garage_door" data-value="slab" data-text="Slab Only"><img src="https://placehold.co/80x40/e2e8f0/4a5568?text=Slab" alt="Slab Only"><span>Slab Only</span></div> <div class="option-item hidden" data-product-line="interior_door garage_door" data-value="single_prehung" data-text="Single Prehung"><img src="https://placehold.co/80x40/e2e8f0/4a5568?text=Prehung" alt="Single Prehung"><span>Single Prehung</span></div> <div class="option-item hidden" data-product-line="interior_door garage_door" data-value="double_prehung" data-text="Double Prehung"><img src="https://placehold.co/80x40/e2e8f0/4a5568?text=Double" alt="Double Prehung"><span>Double Prehung</span></div> <div class="option-item hidden" data-product-line="interior_door" data-value="bypass" data-text="Bypass Door"><img src="https://placehold.co/80x40/e2e8f0/4a5568?text=Bypass" alt="Bypass Door"><span>Bypass Door</span></div> <div class="option-item hidden" data-product-line="interior_door" data-value="bifold" data-text="Bifold Door"><img src="https://placehold.co/80x40/e2e8f0/4a5568?text=Bifold" alt="Bifold Door"><span>Bifold Door</span></div> <div class="option-item hidden" data-product-line="frame_only" data-value="single_frame" data-text="Single Frame"><img src="https://placehold.co/80x40/e2e8f0/4a5568?text=SFrame" alt="Single Frame"><span>Single Frame</span></div> <div class="option-item hidden" data-product-line="frame_only" data-value="double_frame" data-text="Double Frame"><img src="https://placehold.co/80x40/e2e8f0/4a5568?text=DFrame" alt="Double Frame"><span>Double Frame</span></div> <div class="option-item hidden" data-product-line="frame_only" data-value="cased_opening" data-text="Cased Opening"><img src="https://placehold.co/80x40/e2e8f0/4a5568?text=Cased" alt="Cased Opening"><span>Cased Opening</span></div> </div> </div> <div id="series-option-container" class="option-container" data-option-group="door-series"> <label class="block text-sm font-medium text-gray-700 mb-2">Series</label> <div class="options-grid"> <div class="option-item" data-value="flush_series" data-text="Flush Series"><img src="https://placehold.co/80x40/dbeafe/1e3a8a?text=Flush" alt="Flush Series"><span>Flush Series</span></div> <div class="option-item" data-value="molded" data-text="Molded Composite"><img src="https://placehold.co/80x40/dbeafe/1e3a8a?text=Molded" alt="Molded Composite"><span>Molded Composite</span></div> <div class="option-item" data-value="mdf" data-text="MDF"><img src="https://placehold.co/80x40/dbeafe/1e3a8a?text=MDF" alt="MDF"><span>MDF</span></div> <div class="option-item" data-value="wood_panel" data-text="Wood Panel"><img src="https://placehold.co/80x40/fef3c7/92400e?text=Panel" alt="Wood Panel"><span>Wood Panel</span></div> <div class="option-item" data-value="wood_glass" data-text="Wood Glass"><img src="https://placehold.co/80x40/fef3c7/92400e?text=Glass" alt="Wood Glass"><span>Wood Glass</span></div> </div> </div> </div> <div class="tab-navigation"> <button class="nav-button prev-tab" disabled>Previous</button> <button class="nav-button next-tab">Next</button> </div> </div>
+                         <div class="tab-content" id="tab-size"> <div class="space-y-6"> <div id="fire-rated-container" class="option-container hidden" data-option-group="fire-rated"> <label class="block text-sm font-medium text-gray-700 mb-2">Fire Rated?</label> <div class="options-grid grid-cols-2"> <div class="option-item" data-value="no" data-text="No"><span>No</span></div> <div class="option-item" data-value="yes" data-text="Yes"><span>Yes (20 min)</span></div> </div> </div> <div id="machining-options-container" class="option-container hidden" data-option-group="machining-options"> <label class="block text-sm font-medium text-gray-700 mb-2">Machining Options</label> <div class="options-grid grid-cols-2"> <div class="option-item" data-value="machine" data-text="Machine"><img src="https://placehold.co/80x40/ede9fe/5b21b6?text=Mach" alt="Machine"><span>Machine</span></div> <div class="option-item" data-value="non_machined" data-text="Non-Machined"><img src="https://placehold.co/80x40/ede9fe/5b21b6?text=NonMach" alt="Non-Machined"><span>Non-Machined</span></div> </div> </div> <div class="option-container" data-option-group="door-width"> <label class="block text-sm font-medium text-gray-700 mb-2">Width</label> <div class="options-grid grid-cols-4"> <div class="option-item" data-value="12" data-text="1' 0&quot;"><span>1' 0"</span></div> <div class="option-item" data-value="15" data-text="1' 3&quot;"><span>1' 3"</span></div> <div class="option-item" data-value="16" data-text="1' 4&quot;"><span>1' 4"</span></div> <div class="option-item" data-value="18" data-text="1' 6&quot;"><span>1' 6"</span></div> <div class="option-item" data-value="20" data-text="1' 8&quot;"><span>1' 8"</span></div> <div class="option-item" data-value="24" data-text="2' 0&quot;"><span>2' 0"</span></div> <div class="option-item" data-value="28" data-text="2' 4&quot;"><span>2' 4"</span></div> <div class="option-item" data-value="30" data-text="2' 6&quot;"><span>2' 6"</span></div> <div class="option-item" data-value="32" data-text="2' 8&quot;"><span>2' 8"</span></div> <div class="option-item" data-value="36" data-text="3' 0&quot;"><span>3' 0"</span></div> </div> </div> <div class="option-container" data-option-group="door-height"> <label class="block text-sm font-medium text-gray-700 mb-2">Height</label> <div class="options-grid grid-cols-2"> <div class="option-item" data-value="80" data-text="6' 8&quot; (Std)"><span>6' 8" (Std)</span></div> <div class="option-item" data-value="96" data-text="8' 0&quot;"><span>8' 0"</span></div> </div> </div>
+                             <div class="mt-4 flex items-center" id="custom-sizing-checkbox-container">
+                                <input id="custom-sizing-checkbox" name="custom-sizing" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <label for="custom-sizing-checkbox" class="ml-2 block text-sm font-medium text-gray-700">Custom Sizing / Cut Down Door?</label>
+                             </div>
+                             <div class="option-container" data-option-group="door-thickness"> <label class="block text-sm font-medium text-gray-700 mb-2">Thickness</label> <div class="options-grid grid-cols-2"> <div class="option-item" data-value="1.375" data-text='1 3/8" (Std)'><span>1 3/8" (Std)</span></div> <div class="option-item" data-value="1.75" data-text='1 3/4"'><span>1 3/4"</span></div> </div> </div>
+                             <div id="handing-option-container" class="option-container" data-option-group="door-handing"> <label class="block text-sm font-medium text-gray-700 mb-2">Door Handing</label> <div class="options-grid grid-cols-4"> <div class="option-item" data-value="left" data-text="LH Inswing"><img src="https://placehold.co/80x40/cbd5e1/475569?text=LH" alt="LH Inswing"><span>LH Inswing</span></div> <div class="option-item" data-value="right" data-text="RH Inswing"><img src="https://placehold.co/80x40/cbd5e1/475569?text=RH" alt="RH Inswing"><span>RH Inswing</span></div> <div class="option-item hidden" data-product-line="garage_door" data-value="left_reverse" data-text="LH Outswing"><img src="https://placehold.co/80x40/cbd5e1/475569?text=LHR" alt="LH Outswing"><span>LH Outswing</span></div> <div class="option-item hidden" data-product-line="garage_door" data-value="right_reverse" data-text="RH Outswing"><img src="https://placehold.co/80x40/cbd5e1/475569?text=RHR" alt="RH Outswing"><span>RH Outswing</span></div> </div> </div>
+                         </div> <div class="tab-navigation"> <button class="nav-button prev-tab">Previous</button> <button class="nav-button next-tab">Next</button> </div> </div>
+                         <div class="tab-content" id="tab-style"> <div class="space-y-6"> <div id="door-style-container" class="option-container" data-option-group="door-style"> <label class="block text-sm font-medium text-gray-700 mb-2">Door Style</label> <div class="options-grid"> <div class="option-item hidden" data-series="molded" data-value="madison" data-text="Madison"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=6-Panel+Arch" alt="Madison"><span>Madison</span></div> <div class="option-item hidden" data-series="molded" data-value="monroe" data-text="Monroe"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=2-Panel+Arch" alt="Monroe"><span>Monroe</span></div> <div class="option-item hidden" data-series="molded" data-value="craftsman_iii" data-text="Craftsman III"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=3-Panel+Craftsman" alt="Craftsman III"><span>Craftsman III</span></div> <div class="option-item hidden" data-series="molded" data-value="birkdale" data-text="Birkdale"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=3-Panel+Plank" alt="Birkdale"><span>Birkdale</span></div> <div class="option-item hidden" data-series="molded" data-value="conmore" data-text="Conmore"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=5-Panel+Flat" alt="Conmore"><span>Conmore</span></div> <div class="option-item hidden" data-series="molded" data-value="molded_colonist_smooth" data-text="Colonist Smooth"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=6-Panel+Smooth" alt="Colonist Smooth"><span>Colonist Smooth</span></div> <div class="option-item hidden" data-series="molded" data-value="molded_colonist_textured" data-text="Colonist Textured"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=6-Panel+Texture" alt="Colonist Textured"><span>Colonist Textured</span></div> <div class="option-item hidden" data-series="molded" data-value="molded_carrara" data-text="Carrara"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=Flush+Smooth" alt="Carrara"><span>Carrara</span></div> <div class="option-item hidden" data-series="molded" data-value="roman" data-text="Roman"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=2-Panel+Round" alt="Roman"><span>Roman</span></div> <div class="option-item hidden" data-series="molded" data-value="camden" data-text="Camden"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=2-Panel+Flat" alt="Camden"><span>Camden</span></div> <div class="option-item hidden" data-series="molded" data-value="santa_fe" data-text="Santa Fe"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=2-Panel+Arch+Plank" alt="Santa Fe"><span>Santa Fe</span></div> <div class="option-item hidden" data-series="molded" data-value="rockport" data-text="Rockport"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=5-Panel+Flat" alt="Rockport"><span>Rockport</span></div> <div class="option-item hidden" data-series="mdf" data-value="shaker_1" data-text="1 Panel Shaker"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=Shk1" alt="1 Panel Shaker"><span>1 Panel Shaker</span></div> <div class="option-item hidden" data-series="mdf" data-value="shaker_2" data-text="2 Panel Shaker"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=Shk2" alt="2 Panel Shaker"><span>2 Panel Shaker</span></div> <div class="option-item hidden" data-series="mdf" data-value="shaker_3" data-text="3 Panel Shaker"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=Shk3" alt="3 Panel Shaker"><span>3 Panel Shaker</span></div> <div class="option-item hidden" data-series="mdf" data-value="shaker_3_craftsman" data-text="3 Panel Craftsman"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=Shk3C" alt="3 Panel Craftsman"><span>3 Panel Craftsman</span></div> <div class="option-item hidden" data-series="mdf" data-value="shaker_5" data-text="5 Panel Shaker"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=Shk5" alt="5 Panel Shaker"><span>5 Panel Shaker</span></div> <div class="option-item hidden" data-series="flush_series wood_panel wood_glass" data-value="flush" data-text="Flush"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=Flush" alt="Flush"><span>Flush</span></div> <div class="option-item hidden" data-series="wood_panel" data-value="paneled_2" data-text="2-Panel"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=2-Panel" alt="2-Panel"><span>2-Panel</span></div> <div class="option-item hidden" data-series="wood_panel" data-value="paneled_6" data-text="6-Panel"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=6-Panel" alt="6-Panel"><span>6-Panel</span></div> <div class="option-item hidden" data-series="wood_glass" data-value="french" data-text="French"><img src="https://placehold.co/80x40/bfdbfe/1e40af?text=French" alt="French"><span>French</span></div> </div> </div> <div id="slab-material-container" class="option-container hidden" data-option-group="slab-material"> <label class="block text-sm font-medium text-gray-700 mb-2">Slab Material</label> <div class="options-grid"> <div class="option-item hidden" data-series="mdf" data-value="primed_mdf" data-text="Primed MDF"><img src="https://placehold.co/80x40/e0e7ff/3730a3?text=MDF" alt="Primed MDF"><span>Primed MDF</span></div> <div class="option-item hidden" data-series="wood_panel" data-value="pine" data-text="Pine"><img src="https://placehold.co/80x40/fef9c3/b45309?text=Pine" alt="Pine"><span>Pine</span></div> <div class="option-item hidden" data-series="wood_panel" data-value="oak" data-text="Oak"><img src="https://placehold.co/80x40/fef9c3/b45309?text=Oak" alt="Oak"><span>Oak</span></div> <div class="option-item hidden" data-series="wood_panel wood_glass" data-value="maple" data-text="Maple"><img src="https://placehold.co/80x40/fef9c3/b45309?text=Maple" alt="Maple"><span>Maple</span></div> <div class="option-item hidden" data-series="wood_panel wood_glass" data-value="cherry" data-text="Cherry"><img src="https://placehold.co/80x40/fef9c3/b45309?text=Cherry" alt="Cherry"><span>Cherry</span></div> <div class="option-item hidden" data-series="flush_series" data-value="hardboard_smooth" data-text="Hardboard Smooth"><img src="https://placehold.co/80x40/e0e7ff/3730a3?text=HB-S" alt="Hardboard Smooth"><span>Hardboard Smooth</span></div> <div class="option-item hidden" data-series="flush_series" data-value="hardboard_textured" data-text="Hardboard Textured"><img src="https://placehold.co/80x40/e0e7ff/3730a3?text=HB-T" alt="Hardboard Textured"><span>Hardboard Textured</span></div> <div class="option-item hidden" data-series="flush_series" data-value="birch" data-text="Birch"><img src="https://placehold.co/80x40/fef9c3/b45309?text=Birch" alt="Birch"><span>Birch</span></div> <div class="option-item hidden" data-series="flush_series" data-value="lauan" data-text="Lauan"><img src="https://placehold.co/80x40/fef9c3/b45309?text=Lauan" alt="Lauan"><span>Lauan</span></div> <div class="option-item hidden" data-series="flush_series" data-value="red_oak" data-text="Red Oak"><img src="https://placehold.co/80x40/fef9c3/b45309?text=ROak" alt="Red Oak"><span>Red Oak</span></div> <div class="option-item hidden" data-series="molded" data-value="smooth" data-text="Smooth"><img src="https://placehold.co/80x40/e0e7ff/3730a3?text=Smooth" alt="Smooth"><span>Smooth</span></div> <div class="option-item hidden" data-series="molded" data-value="textured" data-text="Textured"><img src="https://placehold.co/80x40/e0e7ff/3730a3?text=Texture" alt="Textured"><span>Textured</span></div> </div> </div> <div id="core-option-container" class="option-container hidden" data-option-group="door-core"> <label class="block text-sm font-medium text-gray-700 mb-2">Core</label> <div class="options-grid grid-cols-2"> <div class="option-item" data-value="hollow" data-text="Hollow Core"><img src="https://placehold.co/80x40/f1f5f9/64748b?text=Hollow" alt="Hollow Core"><span>Hollow Core</span></div> <div class="option-item" data-value="solid" data-text="Solid Core"><img src="https://placehold.co/80x40/f1f5f9/64748b?text=Solid" alt="Solid Core"><span>Solid Core</span></div> </div> </div> </div> <div class="tab-navigation"> <button class="nav-button prev-tab">Previous</button> <button class="nav-button next-tab">Next</button> </div> </div>
+                         <div class="tab-content" id="tab-bore-hinge"> <div class="space-y-6"> <div id="bore-options-container" class="option-container" data-option-group="bore-options"> <label class="block text-sm font-medium text-gray-700 mb-2">Door Bore</label> <div class="options-grid grid-cols-3"> <div class="option-item" data-value="none" data-text="No Bore"><img src="https://placehold.co/80x40/fee2e2/991b1b?text=NoBore" alt="No Bore"><span>No Bore</span></div> <div class="option-item" data-value="single" data-text="Single Bore"><img src="https://placehold.co/80x40/fee2e2/991b1b?text=Bore" alt="Single Bore"><span>Single Bore</span></div> <div class="option-item" data-value="double" data-text="Double Bore"><img src="https://placehold.co/80x40/fee2e2/991b1b?text=DblBore" alt="Double Bore"><span>Double Bore</span></div> <div class="option-item hidden" data-door-type="double_prehung" data-value="ball_catch" data-text="No Bore w/ Ball Catch"><img src="https://placehold.co/80x40/fee2e2/991b1b?text=Catch" alt="Ball Catch"><span>No Bore w/ Ball Catch</span></div> </div> </div> <div id="bore-backset-container" class="option-container hidden" data-option-group="bore-backset"> <label class="block text-sm font-medium text-gray-700 mb-2">Bore Backset</label> <div class="options-grid grid-cols-2"> <div class="option-item" data-value="2.375" data-text='2 3/8"'><span>2 3/8"</span></div> <div class="option-item" data-value="2.75" data-text='2 3/4"'><span>2 3/4"</span></div> </div> </div> <div id="sill-options-wrapper" class="hidden space-y-6"> <div id="sill-type-container" class="option-container" data-option-group="sill-type"> <label class="block text-sm font-medium text-gray-700 mb-2">Sill Type</label> <div class="options-grid grid-cols-2"> <div class="option-item" data-value="aluminum" data-text="Aluminum"><img src="https://placehold.co/80x40/d1d5db/1f2937?text=Alum" alt="Aluminum Sill"><span>Aluminum</span></div> <div class="option-item" data-value="composite" data-text="Composite"><img src="https://placehold.co/80x40/d1d5db/1f2937?text=Comp" alt="Composite Sill"><span>Composite</span></div> </div> </div> <div id="sill-finish-container" class="option-container" data-option-group="sill-finish"> <label class="block text-sm font-medium text-gray-700 mb-2">Sill Finish</label> <div class="options-grid grid-cols-2"> <div class="option-item" data-value="mill" data-text="Mill Finish"><img src="https://placehold.co/80x40/d1d5db/1f2937?text=Mill" alt="Mill Finish"><span>Mill Finish</span></div> <div class="option-item" data-value="bronze" data-text="Bronze Finish"><img src="https://placehold.co/80x40/d1d5db/1f2937?text=Bronze" alt="Bronze Finish"><span>Bronze Finish</span></div> </div> </div> <div id="sill-size-container" class="option-container" data-option-group="sill-size"> <label class="block text-sm font-medium text-gray-700 mb-2">Sill Size</label> <div class="options-grid grid-cols-2"> <div class="option-item" data-value="standard" data-text="Standard"><img src="https://placehold.co/80x40/d1d5db/1f2937?text=Std" alt="Standard Size"><span>Standard</span></div> <div class="option-item" data-value="wide" data-text="Wide"><img src="https://placehold.co/80x40/d1d5db/1f2937?text=Wide" alt="Wide Size"><span>Wide</span></div> </div> </div> </div> <div id="hinge-type-container" class="option-container" data-option-group="hinge-type"> <label class="block text-sm font-medium text-gray-700 mb-2">Hinge Type</label> <div class="options-grid grid-cols-4"> <div class="option-item" data-value="standard" data-text="Standard"><img src="https://placehold.co/80x40/dcfce7/166534?text=Std" alt="Standard Hinge"><span>Standard</span></div> <div class="option-item" data-value="ball_bearing" data-text="Ball Bearing"><img src="https://placehold.co/80x40/dcfce7/166534?text=Ball" alt="Ball Bearing"><span>Ball Bearing</span></div> <div class="option-item" data-value="spring" data-text="Spring"><img src="https://placehold.co/80x40/dcfce7/166534?text=Spring" alt="Spring Hinge"><span>Spring</span></div> <div class="option-item" data-value="non_removable" data-text="Non-Removable Pin"><img src="https://placehold.co/80x40/dcfce7/166534?text=NRP" alt="Non-Removable Pin"><span>Non-Removable Pin</span></div> </div> </div> <div id="hinge-finish-container" class="option-container" data-option-group="hinge-finish"> <label class="block text-sm font-medium text-gray-700 mb-2">Hinge Finish</label> <div class="options-grid grid-cols-4"> <div class="option-item" data-value="matte_black" data-text="Matte Black"><img src="https://placehold.co/80x40/e5e7eb/4b5563?text=BLK" alt="Matte Black"><span>Matte Black</span></div> <div class="option-item" data-value="oil_bronze" data-text="Oil Rubbed Bronze"><img src="https://placehold.co/80x40/e5e7eb/4b5563?text=ORB" alt="Oil Rubbed Bronze"><span>Oil Rubbed Bronze</span></div> <div class="option-item" data-value="satin_nickel" data-text="Satin Nickel"><img src="https://placehold.co/80x40/e5e7eb/4b5563?text=SN" alt="Satin Nickel"><span>Satin Nickel</span></div> <div class="option-item" data-value="polished_brass" data-text="Polished Brass"><img src="https://placehold.co/80x40/e5e7eb/4b5563?text=PB" alt="Polished Brass"><span>Polished Brass</span></div> <div class="option-item" data-value="satin_brass" data-text="Satin Brass"><img src="https://placehold.co/80x40/e5e7eb/4b5563?text=SB" alt="Satin Brass"><span>Satin Brass</span></div> <div class="option-item" data-value="antique_brass" data-text="Antique Brass"><img src="https://placehold.co/80x40/e5e7eb/4b5563?text=AB" alt="Antique Brass"><span>Antique Brass</span></div> <div class="option-item" data-value="primed_white" data-text="Primed White"><img src="https://placehold.co/80x40/e5e7eb/4b5563?text=WHT" alt="Primed White"><span>Primed White</span></div> </div> </div> </div> <div class="tab-navigation"> <button class="nav-button prev-tab">Previous</button> <button class="nav-button next-tab">Next</button> </div> </div>
+                         <div class="tab-content" id="tab-frame"> <div class="space-y-6"> <div class="option-container" data-option-group="jamb-size"> <label class="block text-sm font-medium text-gray-700 mb-2">Jamb Size</label> <div class="options-grid grid-cols-5"> <div class="option-item" data-value="4.5625" data-text='4 9/16"'><span>4 9/16"</span></div> <div class="option-item" data-value="4.875" data-text='4 7/8"'><span>4 7/8"</span></div> <div class="option-item" data-value="5.25" data-text='5 1/4"'><span>5 1/4"</span></div> <div class="option-item" data-value="6.5625" data-text='6 9/16"'><span>6 9/16"</span></div> <div class="option-item" data-value="6.875" data-text='6 7/8"'><span>6 7/8"</span></div> </div> </div> <div class="option-container" data-option-group="jamb-type"> <label class="block text-sm font-medium text-gray-700 mb-2">Jamb Type</label> <div class="options-grid grid-cols-1"> <div class="option-item" data-value="flat" data-text="Flat Jamb"><img src="https://placehold.co/80x40/ffedd5/9a3412?text=Flat" alt="Flat Jamb"><span>Flat Jamb</span></div> </div> </div> <div class="option-container" data-option-group="jamb-material"> <label class="block text-sm font-medium text-gray-700 mb-2">Jamb Material</label> <div class="options-grid grid-cols-4"> <div class="option-item" data-value="fj_pine" data-text="FJ Pine"><img src="https://placehold.co/80x40/ffedd5/9a3412?text=FJPine" alt="FJ Pine"><span>FJ Pine</span></div> <div class="option-item" data-value="clear_pine" data-text="Clear Pine"><img src="https://placehold.co/80x40/ffedd5/9a3412?text=CPine" alt="Clear Pine"><span>Clear Pine</span></div> <div class="option-item" data-value="primed_fj" data-text="Primed FJ"><img src="https://placehold.co/80x40/ffedd5/9a3412?text=PFJ" alt="Primed FJ"><span>Primed FJ</span></div> <div class="option-item" data-value="knotty_alder" data-text="Knotty Alder"><img src="https://placehold.co/80x40/ffedd5/9a3412?text=Alder" alt="Knotty Alder"><span>Knotty Alder</span></div> </div> </div> <div class="option-container" data-option-group="door-stop"> <label class="block text-sm font-medium text-gray-700 mb-2">Door Stop Profile</label> <div class="options-grid grid-cols-2"> <div class="option-item" data-value="standard" data-text="Standard"><img src="https://placehold.co/80x40/ffedd5/9a3412?text=Std" alt="Standard Stop"><span>Standard</span></div> <div class="option-item" data-value="colonial" data-text="Colonial"><img src="https://placehold.co/80x40/ffedd5/9a3412?text=Col" alt="Colonial Stop"><span>Colonial</span></div> </div> </div> <div class="option-container" data-option-group="door-casing"> <label class="block text-sm font-medium text-gray-700 mb-2">Door Casing</label> <div class="options-grid grid-cols-3"> <div class="option-item" data-value="none" data-text="No Casing"><img src="https://placehold.co/80x40/ffedd5/9a3412?text=None" alt="No Casing"><span>No Casing</span></div> <div class="option-item" data-value="colonial" data-text="Colonial"><img src="https://placehold.co/80x40/ffedd5/9a3412?text=Col" alt="Colonial Casing"><span>Colonial</span></div> <div class="option-item" data-value="ranch" data-text="Ranch"><img src="https://placehold.co/80x40/ffedd5/9a3412?text=Ranch" alt="Ranch Casing"><span>Ranch</span></div> </div> </div> </div> <div class="tab-navigation"> <button class="nav-button prev-tab">Previous</button> <button class="nav-button next-tab">Next</button> </div> </div>
+                         <div class="tab-content" id="tab-custom-size"> <div class="space-y-6"> <div id="custom-sizing-checkbox-container" class="flex items-center mb-4"> <input id="custom-sizing-checkbox" name="custom-sizing" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"> <label for="custom-sizing-checkbox" class="ml-2 block text-sm font-medium text-gray-700">Custom Sizing / Cut Down Door?</label> </div> <div id="cut-down-details-container" class="conditional-container hidden space-y-4 mt-4 p-4 border border-gray-200 rounded-md bg-gray-50"> <div> <label for="cut-down-height" class="block text-sm font-medium text-gray-700">Height Cut Down Amount (inches)</label> <input type="number" name="cut-down-height" id="cut-down-height" step="0.125" min="0" class="input-field" placeholder="e.g., 1.5"> </div> <div id="bore-vertical-pos-container" class="option-container hidden" data-option-group="bore-vertical-pos"> <label class="block text-sm font-medium text-gray-700 mb-2">Door Bore Vertical Position</label> <div class="options-grid grid-cols-2"> <div class="option-item" data-value="top_44" data-text='Std 44" from Top'><span>Std 44" from Top</span></div> <div class="option-item" data-value="bottom_36" data-text='Std 36" from Bottom'><span>Std 36" from Bottom</span></div> </div> </div> </div> </div> <div class="tab-navigation"> <button class="nav-button prev-tab">Previous</button> <button class="nav-button next-tab">Next</button> </div> </div>
+                         <div class="tab-content" id="tab-shipping"> <div class="space-y-6"> <div class="option-container" data-option-group="door-label"> <label class="block text-sm font-medium text-gray-700 mb-2">Add Door Label?</label> <div class="options-grid grid-cols-2"> <div class="option-item" data-value="no" data-text="No"><span>No</span></div> <div class="option-item" data-value="yes" data-text="Yes"><span>Yes</span></div> </div> </div> <div id="label-text-container" class="conditional-container hidden mt-4"> <label for="label-text" class="block text-sm font-medium text-gray-700">Label Text</label> <input type="text" name="label-text" id="label-text" maxlength="50" class="input-field" placeholder="Enter text for label (max 50 chars)"> </div> </div> <div class="tab-navigation"> <button class="nav-button prev-tab">Previous</button> <button class="nav-button next-tab">Next</button> </div> </div>
+                         <div class="tab-content" id="tab-summary"> <div class="summary-container space-y-4"> <div class="summary-group" id="summary-group-product"> <h4>Product Selection</h4> <ul class="summary-list space-y-1 text-sm text-gray-600"> <li class="summary-item" id="summary-product-line-item"><strong>Product Line:</strong> <span id="summary-product-line"></span></li> <li class="summary-item" id="summary-door-type-item"><strong>Type:</strong> <span id="summary-door-type"></span></li> <li class="summary-item" id="summary-door-series-item"><strong>Series:</strong> <span id="summary-door-series"></span></li> </ul> </div> <div class="summary-group" id="summary-group-size"> <h4>Size</h4> <ul class="summary-list space-y-1 text-sm text-gray-600"> <li class="summary-item hidden" id="summary-fire-rated-item"><strong>Fire Rated:</strong> <span id="summary-fire-rated"></span></li> <li class="summary-item hidden" id="summary-machining-options-item"><strong>Machining:</strong> <span id="summary-machining-options"></span></li> <li class="summary-item" id="summary-door-width-item"><strong>Width:</strong> <span id="summary-door-width"></span></li> <li class="summary-item" id="summary-door-height-item"><strong>Height:</strong> <span id="summary-door-height"></span></li> <li class="summary-item" id="summary-door-thickness-item"><strong>Thickness:</strong> <span id="summary-door-thickness"></span></li> <li class="summary-item hidden" id="summary-door-handing-item"><strong>Handing:</strong> <span id="summary-door-handing"></span></li> <li class="summary-item hidden" id="summary-custom-sizing-item"><strong>Custom Sizing:</strong> <span id="summary-custom-sizing"></span></li> <li class="summary-item hidden" id="summary-cut-down-height-item"><strong>Cut Amount:</strong> <span id="summary-cut-down-height"></span></li> <li class="summary-item hidden" id="summary-bore-vertical-pos-item"><strong>Bore Position:</strong> <span id="summary-bore-vertical-pos"></span></li> </ul> </div> <div class="summary-group" id="summary-group-style"> <h4>Style</h4> <ul class="summary-list space-y-1 text-sm text-gray-600"> <li class="summary-item" id="summary-door-style-item"><strong>Style:</strong> <span id="summary-door-style"></span></li> <li class="summary-item hidden" id="summary-slab-material-item"><strong>Slab Material:</strong> <span id="summary-slab-material"></span></li> <li class="summary-item hidden" id="summary-door-core-item"><strong>Core:</strong> <span id="summary-door-core"></span></li> </ul> </div> <div class="summary-group" id="summary-group-bore-hinge"> <h4>Bore & Hinge</h4> <ul class="summary-list space-y-1 text-sm text-gray-600"> <li class="summary-item hidden" id="summary-bore-options-item"><strong>Bore:</strong> <span id="summary-bore-options"></span></li> <li class="summary-item hidden" id="summary-bore-backset-item"><strong>Backset:</strong> <span id="summary-bore-backset"></span></li> <li class="summary-item hidden" id="summary-sill-type-item"><strong>Sill Type:</strong> <span id="summary-sill-type"></span></li> <li class="summary-item hidden" id="summary-sill-finish-item"><strong>Sill Finish:</strong> <span id="summary-sill-finish"></span></li> <li class="summary-item hidden" id="summary-sill-size-item"><strong>Sill Size:</strong> <span id="summary-sill-size"></span></li> <li class="summary-item hidden" id="summary-hinge-type-item"><strong>Hinge Type:</strong> <span id="summary-hinge-type"></span></li> <li class="summary-item hidden" id="summary-hinge-finish-item"><strong>Hinge Finish:</strong> <span id="summary-hinge-finish"></span></li> </ul> </div> <div class="summary-group" id="summary-group-frame"> <h4>Frame</h4> <ul class="summary-list space-y-1 text-sm text-gray-600"> <li class="summary-item hidden" id="summary-jamb-size-item"><strong>Jamb Size:</strong> <span id="summary-jamb-size"></span></li> <li class="summary-item hidden" id="summary-jamb-type-item"><strong>Jamb Type:</strong> <span id="summary-jamb-type"></span></li> <li class="summary-item hidden" id="summary-jamb-material-item"><strong>Jamb Material:</strong> <span id="summary-jamb-material"></span></li> <li class="summary-item hidden" id="summary-door-stop-item"><strong>Door Stop:</strong> <span id="summary-door-stop"></span></li> <li class="summary-item hidden" id="summary-door-casing-item"><strong>Casing:</strong> <span id="summary-door-casing"></span></li> </ul> </div> <div class="summary-group" id="summary-group-shipping"> <h4>Shipping</h4> <ul class="summary-list space-y-1 text-sm text-gray-600"> <li class="summary-item hidden" id="summary-door-label-item"><strong>Label:</strong> <span id="summary-door-label"></span></li> <li class="summary-item hidden" id="summary-label-text-item"><strong>Label Text:</strong> <span id="summary-label-text" class="italic break-words"></span></li> </ul> </div> </div> <div class="tab-navigation"> <button class="nav-button prev-tab">Previous</button> <button class="nav-button next-tab" disabled>Next</button> </div> </div>
+                 </div>
+            </div>
+
+            <div class="space-y-6">
+                 <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-200 text-center price-update mb-4">
+                    <h3 class="text-lg font-medium text-gray-600 mb-2">Estimated Price (Per Unit):</h3>
+                    <p id="total-price" class="text-4xl font-bold text-indigo-700">$---</p>
+                 </div>
+                 <div class="quantity-control">
+                     <button id="qty-down" class="quantity-button" aria-label="Decrease quantity">-</button>
+                     <label for="quantity" class="sr-only">Quantity:</label>
+                     <input type="number" id="quantity" name="quantity" value="1" min="1" class="input-field quantity-input">
+                     <button id="qty-up" class="quantity-button" aria-label="Increase quantity">+</button>
+                 </div>
+                  <button id="add-update-button" class="action-button w-full" disabled>Select Options to Add</button>
+
+                 <div>
+                    <h3 class="text-lg font-medium text-gray-800 mb-3 text-center">Door Preview</h3>
+                    <div id="door-preview-container"> <div id="door-preview"></div> </div>
+                 </div>
+
+                 <button id="view-list-button" class="action-button view-list-button w-full hidden">View List</button>
+
+            </div>
+        </div>
+        </div> <div id="list-view" class="hidden">
+             <div class="flex justify-between items-center mb-6">
+                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Saved Configurations</h1>
+                 <button id="back-to-config-button" class="action-button back-button">Back to Configurator</button>
+             </div>
+             <div id="config-list-section">
+                <div id="configuration-list" class="space-y-4">
+                    <p id="empty-list-message" class="text-center text-gray-500 italic">No configurations added yet.</p>
+                    </div>
+                <div id="list-total-price" class="mt-6 pt-4 border-t border-gray-300 text-right font-semibold text-lg text-gray-800">
+                    Total Order Price: $0.00
+                </div>
+             </div>
+        </div>
+
+         <div id="modal-overlay" class="hidden"> <div id="modal-content" role="alertdialog" aria-modal="true" aria-labelledby="modal-title"> <button id="modal-close-button" aria-label="Close modal">&times;</button> <h3 id="modal-title" class="text-lg font-semibold">Incomplete Configuration</h3> <p id="modal-message">Please make a selection for all required options before adding to the list.</p> <div id="modal-actions"> <button id="modal-goto-button" class="modal-button">Go to First Missing</button> <button id="modal-autofill-button" class="modal-button">Auto-Select Default</button> </div> </div> </div>
+         <div id="post-add-modal-overlay" class="hidden"> <div id="modal-content" role="dialog" aria-modal="true" aria-labelledby="post-add-modal-title"> <button id="post-add-modal-close-button" aria-label="Close modal">&times;</button> <h3 id="post-add-modal-title" class="text-lg font-semibold">Item Added</h3> <p id="post-add-modal-message">Item successfully added to the list. What next?</p> <div id="post-add-modal-actions" class="modal-actions"> <button id="post-add-copy-button" class="modal-button">Copy Previous Config</button> <button id="post-add-new-button" class="modal-button">Start New Config</button> </div> </div> </div>
+
+
+    </div> <script>
+        // --- Pricing Data ---
+        const pricing = { base: 70, productLines: { interior_door: 0, garage_door: 50, frame_only: -60 }, types: { slab: 0, single_prehung: 40, double_prehung: 90, bypass: 60, bifold: 55, single_frame: 30, double_frame: 70, cased_opening: 20 }, series: { flush_series: -5, molded: 0, mdf: 5, wood_panel: 80, wood_glass: 100 }, cores: { hollow: 0, solid: 50 }, styles: { madison: 20, monroe: 20, craftsman_iii: 25, birkdale: 22, conmore: 22, molded_colonist_smooth: 15, molded_colonist_textured: 18, molded_carrara: 5, roman: 18, camden: 18, santa_fe: 18, rockport: 18, shaker_1: 10, shaker_2: 20, shaker_3: 25, shaker_3_craftsman: 30, shaker_5: 35, flush: 0, paneled_2: 20, paneled_6: 30, french: 110 }, slabMaterials: { primed_mdf: 0, pine: 20, oak: 45, maple: 55, cherry: 70, hardboard_smooth: -2, hardboard_textured: 0, birch: 30, lauan: 25, red_oak: 50, smooth: 0, textured: 5 }, widths: { '12': -20, '15': -18, '16': -15, '18':-12, '20': -10, '24': -10, '28': -5, '30': 0, '32': 10, '36': 25 }, heights: { '80': 0, /*'84': 20,*/ '96': 50 }, thicknesses: { '1.375': 0, '1.75': 30 }, handing: { none: 0, left: 0, right: 0, left_reverse: 5, right_reverse: 5 }, boreOptions: { none: 0, single: 10, double: 15, ball_catch: 12 }, boreBacksets: { '2.375': 0, '2.75': 0 }, hingeTypes: { standard: 0, ball_bearing: 8, spring: 15, non_removable: 5 }, hingeFinishes: { matte_black: 5, oil_bronze: 5, satin_nickel: 0, polished_brass: 3, satin_brass: 4, antique_brass: 6, primed_white: 2 }, jambSizes: { '4.5625': 0, '4.875': 5, '5.25': 10, '6.5625': 15, '6.875': 20 }, jambTypes: { flat: 0 }, jambMaterials: { fj_pine: 10, clear_pine: 30, primed_fj: 0, knotty_alder: 40 }, doorStops: { standard: 0, colonial: 5 }, doorCasings: { none: 0, colonial: 25, ranch: 20 }, cutDown: { no: 0, yes: 25 }, boreVerticalPos: { top_44: 0, bottom_36: 0 }, doorLabel: { no: 0, yes: 2 }, fireRated: { no: 0, yes: 75 }, sillTypes: { aluminum: 0, composite: 15 }, sillFinishes: { mill: 0, bronze: 5 }, sillSizes: { standard: 0, wide: 10 }, machiningOptions: { machine: 0, non_machined: -5 } };
+
+        // --- State Objects ---
+        let selectedOptions = {}; let configurationList = []; let editingItemId = null; let lastAddedConfig = null;
+
+        // --- DOM Element References ---
+        const configuratorView = document.getElementById('configurator-view'); const listView = document.getElementById('list-view'); const optionsArea = document.getElementById('tab-content'); const summaryContainer = document.getElementById('tab-summary'); const summarySpans = {}; const summaryItems = {};
+        summaryContainer.querySelectorAll('li[id$="-item"]').forEach(item => { const key = item.id.replace('-item', '').replace('summary-', '').replace(/-/g, '_'); summaryItems[key] = item; const span = item.querySelector('span[id^="summary-"]'); if (span) summarySpans[key] = span; });
+        const seriesOptionContainer = document.getElementById('series-option-container'); const coreOptionContainer = document.getElementById('core-option-container'); const handingOptionContainer = document.getElementById('handing-option-container'); const boreOptionsContainer = document.getElementById('bore-options-container'); const boreBacksetContainer = document.getElementById('bore-backset-container'); const hingeTypeContainer = document.getElementById('hinge-type-container'); const hingeFinishContainer = document.getElementById('hinge-finish-container'); const styleTabButton = document.getElementById('style-tab-button'); const frameTabButton = document.getElementById('frame-tab-button'); const boreHingeTabButton = document.getElementById('bore-hinge-tab-button'); const customSizeTabButton = document.getElementById('custom-size-tab-button'); const cutDownDetailsContainer = document.getElementById('cut-down-details-container'); const cutDownHeightInput = document.getElementById('cut-down-height'); const boreVerticalPosContainer = document.getElementById('bore-vertical-pos-container'); const labelTextContainer = document.getElementById('label-text-container'); const labelTextInput = document.getElementById('label-text'); const doorStyleContainer = document.getElementById('door-style-container'); const slabMaterialContainer = document.getElementById('slab-material-container'); const doorTypeContainer = document.querySelector('[data-option-group="door-type"]'); const fireRatedContainer = document.getElementById('fire-rated-container'); const sillOptionsWrapper = document.getElementById('sill-options-wrapper'); const machiningOptionsContainer = document.getElementById('machining-options-container'); const totalPriceDisplay = document.getElementById('total-price'); const priceUpdateDiv = totalPriceDisplay.parentElement; const doorPreview = document.getElementById('door-preview'); const tabButtons = document.querySelectorAll('.tab-button'); const tabContents = document.querySelectorAll('.tab-content'); const tabNavigations = document.querySelectorAll('.tab-navigation'); const quantityInput = document.getElementById('quantity'); const qtyDownButton = document.getElementById('qty-down'); const qtyUpButton = document.getElementById('qty-up'); const addUpdateButton = document.getElementById('add-update-button'); const configListDiv = document.getElementById('configuration-list'); const emptyListMessage = document.getElementById('empty-list-message'); const listTotalPriceDiv = document.getElementById('list-total-price'); const viewListButton = document.getElementById('view-list-button'); const backToConfigButton = document.getElementById('back-to-config-button'); const modalOverlay = document.getElementById('modal-overlay'); const modalGotoButton = document.getElementById('modal-goto-button'); const modalAutofillButton = document.getElementById('modal-autofill-button'); const modalCloseButton = document.getElementById('modal-close-button');
+        const postAddModalOverlay = document.getElementById('post-add-modal-overlay'); const postAddCopyButton = document.getElementById('post-add-copy-button'); const postAddNewButton = document.getElementById('post-add-new-button'); const postAddModalCloseButton = document.getElementById('post-add-modal-close-button');
+
+        const tabOrder = ['product', 'size', 'style', 'bore-hinge', 'frame', 'custom-size', 'shipping', 'summary'];
+
+        // --- Utility Functions ---
+        function inchesToFeetInches(inches) { if (!inches) return ''; const feet = Math.floor(inches / 12); const rem = inches % 12; return `${feet}'${rem > 0 ? ` ${rem}"` : ''}`; }
+        function generateId() { return Date.now().toString(36) + Math.random().toString(36).substring(2); }
+
+        // --- View Switching ---
+        function showConfiguratorView() { listView.classList.add('hidden'); configuratorView.classList.remove('hidden'); }
+        function showListView() { configuratorView.classList.add('hidden'); listView.classList.remove('hidden'); renderConfigurationList(); }
+        function showModal() { modalOverlay.classList.remove('hidden'); }
+        function hideModal() { modalOverlay.classList.add('hidden'); }
+        function showPostAddModal(addedConfig) { lastAddedConfig = addedConfig; postAddModalOverlay.classList.remove('hidden'); }
+        function hidePostAddModal() { postAddModalOverlay.classList.add('hidden'); lastAddedConfig = null; }
+
+        // --- Core Functions ---
+
+        /** Switches active tab. */
+        function switchTab(event) { const button = event.currentTarget; if (button.classList.contains('disabled')) return; const targetTab = button.dataset.tab; tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === targetTab)); tabContents.forEach(content => content.classList.toggle('active', content.id === `tab-${targetTab}`)); updateNavButtonStates(); }
+         /** Handles clicks on Prev/Next navigation buttons */
+         function handlePrevNextClick(event) { const button = event.target; const isNext = button.classList.contains('next-tab'); const currentTabContent = button.closest('.tab-content'); if (!currentTabContent) return; const currentTabId = currentTabContent.id.replace('tab-', ''); const currentIndex = tabOrder.indexOf(currentTabId); let targetIndex = isNext ? currentIndex + 1 : currentIndex - 1; while (targetIndex >= 0 && targetIndex < tabOrder.length) { const targetTabId = tabOrder[targetIndex]; const targetTabButton = document.querySelector(`.tab-button[data-tab="${targetTabId}"]`); if (targetTabButton && !targetTabButton.classList.contains('disabled')) { switchTab({ currentTarget: targetTabButton }); window.scrollTo({ top: configuratorView.offsetTop - 20, behavior: 'smooth' }); break; } targetIndex = isNext ? targetIndex + 1 : targetIndex - 1; } }
+         /** Updates the enabled/disabled state of Prev/Next buttons */
+        function updateNavButtonStates() { const activeTabButton = document.querySelector('.tab-button.active'); if (!activeTabButton) return; const currentTabId = activeTabButton.dataset.tab; const currentIndex = tabOrder.indexOf(currentTabId); tabNavigations.forEach(nav => { const prevButton = nav.querySelector('.prev-tab'); const nextButton = nav.querySelector('.next-tab'); if (!prevButton || !nextButton) return; let prevEnabled = false; for (let i = currentIndex - 1; i >= 0; i--) { const btn = document.querySelector(`.tab-button[data-tab="${tabOrder[i]}"]`); if (btn && !btn.classList.contains('disabled')) { prevEnabled = true; break; } } prevButton.disabled = !prevEnabled; let nextEnabled = false; for (let i = currentIndex + 1; i < tabOrder.length; i++) { const btn = document.querySelector(`.tab-button[data-tab="${tabOrder[i]}"]`); if (btn && !btn.classList.contains('disabled')) { nextEnabled = true; break; } } nextButton.disabled = !nextEnabled; }); }
+        /** Handles clicks on option items - Now includes deselection */
+        function handleOptionClick(event) {
+            const clickedItem = event.target.closest('.option-item');
+            if (!clickedItem || clickedItem.classList.contains('disabled')) return;
+            const optionGroupDiv = clickedItem.closest('.option-container');
+            if (!optionGroupDiv) return;
+            const optionGroup = optionGroupDiv.dataset.optionGroup;
+            const newValue = clickedItem.dataset.value;
+            const isCurrentlySelected = clickedItem.classList.contains('selected');
+
+            if (isCurrentlySelected) {
+                selectedOptions[optionGroup] = null;
+                clickedItem.classList.remove('selected');
+            } else {
+                selectedOptions[optionGroup] = newValue;
+                optionGroupDiv.querySelectorAll('.option-item').forEach(item => item.classList.remove('selected'));
+                clickedItem.classList.add('selected');
+            }
+
+            if (optionGroup === 'door-series' || optionGroup === 'product-line' || optionGroup === 'door-type' || optionGroup === 'machining-options' || optionGroup === 'bore-options') {
+                 filterOptionsBasedOnProductLineAndSeries();
+            }
+            updateDisplayAndPreview();
+        }
+        /** Handles input in text/number fields */
+        function handleInputChange(event) { const inputElement = event.target; const optionGroup = inputElement.name; if (optionGroup && selectedOptions.hasOwnProperty(optionGroup)) { selectedOptions[optionGroup] = inputElement.value; updateDisplayAndPreview(); } }
+         /** Handles quantity input change */
+         function handleQuantityChange(event) { const newQty = parseInt(event.target.value); selectedOptions.quantity = isNaN(newQty) || newQty < 1 ? 1 : newQty; event.target.value = selectedOptions.quantity; }
+         /** Handles quantity button clicks */
+        function handleQuantityButtonClick(event) { const isIncrement = event.target.id === 'qty-up'; let currentQty = parseInt(quantityInput.value) || 1; if (isIncrement) { currentQty++; } else { currentQty = Math.max(1, currentQty - 1); } quantityInput.value = currentQty; quantityInput.dispatchEvent(new Event('change')); }
+        /** Filters Door Type, Style, and Slab Material based on Product Line and Series */
+        function filterOptionsBasedOnProductLineAndSeries() {
+            const productLine = selectedOptions['product-line'];
+            const series = selectedOptions['door-series'];
+            let firstVisibleType = null; let isCurrentTypeVisible = false;
+            let firstVisibleStyle = null; let isCurrentStyleVisible = false;
+            let firstVisibleMaterial = null; let isCurrentMaterialVisible = false;
+
+            // Filter Door Type
+            doorTypeContainer.querySelectorAll('.option-item').forEach(item => { const applicableLines = item.dataset.productLine ? item.dataset.productLine.split(' ') : []; const isVisible = applicableLines.includes(productLine); item.classList.toggle('hidden', !isVisible); if (isVisible && !firstVisibleType) firstVisibleType = item.dataset.value; if (isVisible && item.dataset.value === selectedOptions['door-type']) isCurrentTypeVisible = true; });
+            if (!isCurrentTypeVisible) selectedOptions['door-type'] = null; // Deselect if current type becomes hidden
+
+            // Filter Door Style
+            const showStyle = productLine !== 'frame_only';
+            if (showStyle && series) {
+                doorStyleContainer.querySelectorAll('.option-item').forEach(item => { const applicableSeries = item.dataset.series ? item.dataset.series.split(' ') : []; const isVisible = applicableSeries.includes(series); item.classList.toggle('hidden', !isVisible); if (isVisible && !firstVisibleStyle) firstVisibleStyle = item.dataset.value; if (isVisible && item.dataset.value === selectedOptions['door-style']) isCurrentStyleVisible = true; });
+                if (!isCurrentStyleVisible) selectedOptions['door-style'] = null; // Deselect if hidden
+            } else if (!showStyle) { selectedOptions['door-style'] = null; }
+
+            // Filter Slab Material
+            const showSlabMaterial = showStyle && (series === 'flush_series' || series === 'wood_panel' || series === 'wood_glass' || series === 'molded' || series === 'mdf');
+            slabMaterialContainer.classList.toggle('hidden', !showSlabMaterial);
+            summaryItems['slab_material']?.classList.toggle('hidden', !showSlabMaterial);
+            if (showSlabMaterial && series) {
+                slabMaterialContainer.querySelectorAll('.option-item').forEach(item => { const applicableSeries = item.dataset.series ? item.dataset.series.split(' ') : []; const isVisible = applicableSeries.includes(series); item.classList.toggle('hidden', !isVisible); if (isVisible && !firstVisibleMaterial) firstVisibleMaterial = item.dataset.value; if (isVisible && item.dataset.value === selectedOptions['slab-material']) isCurrentMaterialVisible = true; });
+                if (!isCurrentMaterialVisible) selectedOptions['slab-material'] = null; // Deselect if hidden
+            } else { selectedOptions['slab-material'] = null; }
+        }
+
+        /** Shows/hides conditional options and updates their state/appearance. */
+        function updateConditionalOptions() {
+            const productLine = selectedOptions['product-line'];
+            const type = selectedOptions['door-type'];
+            const series = selectedOptions['door-series'];
+            const boreOption = selectedOptions['bore-options'];
+            const cutDown = selectedOptions['custom-sizing']; // Use checkbox state
+            const addLabel = selectedOptions['door-label'];
+            const machining = selectedOptions['machining-options'];
+            const isFrameOnly = productLine === 'frame_only';
+            const isGarageDoor = productLine === 'garage_door';
+            const isDoorProduct = !isFrameOnly;
+            const isSlab = type === 'slab';
+            const isDoubleDoor = type === 'double_prehung';
+
+            filterOptionsBasedOnProductLineAndSeries();
+
+            seriesOptionContainer.classList.toggle('hidden', isFrameOnly);
+            summaryItems['door_series']?.classList.toggle('hidden', isFrameOnly);
+            if (isFrameOnly) selectedOptions['door-series'] = null;
+
+            styleTabButton.classList.toggle('disabled', isFrameOnly);
+            summaryItems['door_style']?.classList.toggle('hidden', isFrameOnly);
+             if (isFrameOnly && styleTabButton.classList.contains('active')) { switchTab({ currentTarget: document.querySelector('.tab-button[data-tab="product"]') }); }
+             if (isFrameOnly) selectedOptions['door-style'] = null;
+
+            const showCore = isDoorProduct && (series === 'molded' || series === 'flush_series');
+            coreOptionContainer.classList.toggle('hidden', !showCore);
+            summaryItems['door_core']?.classList.toggle('hidden', !showCore);
+            if (!showCore) selectedOptions['door-core'] = null;
+
+             const showFireRated = isGarageDoor;
+             fireRatedContainer.classList.toggle('hidden', !showFireRated);
+             summaryItems['fire_rated']?.classList.toggle('hidden', !showFireRated);
+             if (!showFireRated) selectedOptions['fire-rated'] = 'no';
+
+             const showMachining = isSlab;
+             machiningOptionsContainer.classList.toggle('hidden', !showMachining);
+             summaryItems['machining_options']?.classList.toggle('hidden', !showMachining);
+             if (!showMachining) selectedOptions['machining-options'] = null;
+
+            const handingApplies = !isFrameOnly && (type === 'single_prehung' || type === 'double_prehung' || (isSlab && machining === 'machine'));
+            handingOptionContainer.classList.toggle('hidden', !handingApplies);
+            summaryItems['door_handing']?.classList.toggle('hidden', !handingApplies);
+            if (!handingApplies) selectedOptions['door-handing'] = null; // Reset to null if hidden
+            else if (selectedOptions['door-handing'] === 'none' || selectedOptions['door-handing'] === null) selectedOptions['door-handing'] = null; // Stay null if applicable but not selected
+
+            handingOptionContainer.querySelectorAll('.option-item[data-product-line="garage_door"]').forEach(item => { item.classList.toggle('hidden', !isGarageDoor); });
+
+
+            const boreHingeApplies = isDoorProduct && (type === 'single_prehung' || type === 'double_prehung' || (isSlab && machining === 'machine'));
+            boreHingeTabButton.classList.toggle('disabled', !boreHingeApplies);
+            boreOptionsContainer.classList.toggle('hidden', !boreHingeApplies);
+            hingeTypeContainer.classList.toggle('hidden', !boreHingeApplies);
+            hingeFinishContainer.classList.toggle('hidden', !boreHingeApplies);
+            summaryItems['bore_options']?.classList.toggle('hidden', !boreHingeApplies);
+            summaryItems['hinge_type']?.classList.toggle('hidden', !boreHingeApplies);
+            summaryItems['hinge_finish']?.classList.toggle('hidden', !boreHingeApplies);
+            if (!boreHingeApplies) { selectedOptions['bore-options'] = null; selectedOptions['hinge-type'] = null; selectedOptions['hinge-finish'] = null; }
+
+            const showBallCatch = boreHingeApplies && isDoubleDoor;
+            boreOptionsContainer.querySelector('.option-item[data-value="ball_catch"]')?.classList.toggle('hidden', !showBallCatch);
+            if (!showBallCatch && selectedOptions['bore-options'] === 'ball_catch') selectedOptions['bore-options'] = null;
+
+            const showBackset = boreHingeApplies && (boreOption === 'single' || boreOption === 'double');
+            boreBacksetContainer.classList.toggle('hidden', !showBackset);
+            summaryItems['bore_backset']?.classList.toggle('hidden', !showBackset);
+            if (!showBackset) selectedOptions['bore-backset'] = '2.375';
+
+             const showSills = isGarageDoor;
+             sillOptionsWrapper.classList.toggle('hidden', !showSills);
+             summaryItems['sill_type']?.classList.toggle('hidden', !showSills);
+             summaryItems['sill_finish']?.classList.toggle('hidden', !showSills);
+             summaryItems['sill_size']?.classList.toggle('hidden', !showSills);
+             if (!showSills) { selectedOptions['sill-type'] = 'aluminum'; selectedOptions['sill-finish'] = 'mill'; selectedOptions['sill-size'] = 'standard'; }
+
+            const frameApplies = type === 'single_prehung' || type === 'double_prehung' || type === 'single_frame' || type === 'double_frame' || type === 'cased_opening';
+            frameTabButton.classList.toggle('disabled', !frameApplies);
+            summaryItems['jamb_size']?.classList.toggle('hidden', !frameApplies);
+            summaryItems['jamb_type']?.classList.toggle('hidden', !frameApplies);
+            summaryItems['jamb_material']?.classList.toggle('hidden', !frameApplies);
+            summaryItems['door_stop']?.classList.toggle('hidden', !frameApplies || type === 'cased_opening');
+            summaryItems['door_casing']?.classList.toggle('hidden', !frameApplies);
+             if (!frameApplies) { selectedOptions['jamb-size'] = null; selectedOptions['jamb-type'] = 'flat'; selectedOptions['jamb-material'] = null; selectedOptions['door-stop'] = 'standard'; selectedOptions['door-casing'] = 'none'; }
+
+            // --- Custom Sizing Tab/Options ---
+            const customSizingChecked = selectedOptions['custom-sizing'] === 'yes'; // Use checkbox state
+            customSizeTabButton.classList.toggle('disabled', !customSizingChecked);
+            summaryItems['custom_sizing']?.classList.toggle('hidden', !customSizingChecked); // Hide summary if not checked
+            summaryItems['cut_down_height']?.classList.toggle('hidden', !customSizingChecked);
+            summaryItems['bore_vertical_pos']?.classList.toggle('hidden', !customSizingChecked);
+
+            if (!customSizingChecked) {
+                 // Reset internal custom options if main checkbox is off
+                 selectedOptions['cut-down-height'] = '';
+                 selectedOptions['bore-vertical-pos'] = 'top_44';
+                 cutDownDetailsContainer.classList.add('hidden');
+                 boreVerticalPosContainer.classList.add('hidden');
+            } else {
+                 // Show details container only if checkbox is checked
+                 cutDownDetailsContainer.classList.remove('hidden');
+                 summaryItems['cut_down_height']?.classList.remove('hidden'); // Show summary items
+
+                 const showBorePos = boreHingeApplies && (boreOption === 'single' || boreOption === 'double');
+                 boreVerticalPosContainer.classList.toggle('hidden', !showBorePos);
+                 summaryItems['bore_vertical_pos']?.classList.toggle('hidden', !showBorePos);
+                 if (!showBorePos) selectedOptions['bore-vertical-pos'] = 'top_44';
+            }
+
+            const showLabelText = addLabel === 'yes';
+            labelTextContainer.classList.toggle('hidden', !showLabelText);
+            summaryItems['door_label']?.classList.toggle('hidden', !showLabelText);
+            summaryItems['label_text']?.classList.toggle('hidden', !showLabelText);
+             if (!showLabelText) selectedOptions['label-text'] = '';
+
+             const activeTabButton = document.querySelector('.tab-button.active');
+             if (activeTabButton && activeTabButton.classList.contains('disabled')) {
+                 const firstEnabledTab = document.querySelector('.tab-button:not(.disabled)');
+                 if (firstEnabledTab) switchTab({ currentTarget: firstEnabledTab });
+             }
+
+            initializeSelections(Object.keys(selectedOptions));
+            updateNavButtonStates();
+        }
+
+        /** Calculates the total price for the CURRENT configuration. */
+        function calculatePrice(config = selectedOptions) { if (!isConfigurationComplete(config)) return 0; let total = 0; const productLine = config['product-line']; const type = config['door-type']; const series = config['door-series']; const core = config['door-core']; const style = config['door-style']; const slabMat = config['slab-material']; const width = config['door-width']; const height = config['door-height']; const thickness = config['door-thickness']; const handing = config['door-handing']; const bore = config['bore-options']; const hingeType = config['hinge-type']; const hingeFinish = config['hinge-finish']; const jambSize = config['jamb-size']; const jambType = config['jamb-type']; const jambMat = config['jamb-material']; const doorStop = config['door-stop']; const casing = config['door-casing']; const customSizing = config['custom-sizing']; const addLabel = config['door-label']; const fireRated = config['fire-rated']; const sillType = config['sill-type']; const sillFinish = config['sill-finish']; const sillSize = config['sill-size']; const machining = config['machining-options']; total += pricing.productLines[productLine] || 0; if (productLine === 'frame_only') { total += pricing.types[type] || 0; total += (pricing.jambSizes[jambSize] || 0); total += (pricing.jambTypes[jambType] || 0); total += (pricing.jambMaterials[jambMat] || 0); if (type !== 'cased_opening') { total += (pricing.doorStops[doorStop] || 0); } total += (pricing.doorCasings[casing] || 0); total += (addLabel === 'yes' ? pricing.doorLabel.yes : 0); return total > 0 ? total : 0; } const showCore = series === 'molded' || series === 'flush_series'; const coreCost = showCore ? (pricing.cores[core] || 0) : 0; const boreHingeApplies = type === 'slab' || type === 'single_prehung' || type === 'double_prehung'; const isMachinedSlab = type === 'slab' && machining === 'machine'; const boreCost = (boreHingeApplies && (type !== 'slab' || isMachinedSlab)) ? (pricing.boreOptions[bore] || 0) : 0; const hingeCost = (boreHingeApplies && (type !== 'slab' || isMachinedSlab)) ? (pricing.hingeTypes[hingeType] || 0) + (pricing.hingeFinishes[hingeFinish] || 0) : 0; const numHinges = (parseInt(height) || 80) >= 96 ? 4 : 3; const totalHingeCost = hingeCost * numHinges; const frameApplies = type === 'single_prehung' || type === 'double_prehung'; const frameCost = frameApplies ? (pricing.jambSizes[jambSize] || 0) + (pricing.jambTypes[jambType] || 0) + (pricing.jambMaterials[jambMat] || 0) + (pricing.doorStops[doorStop] || 0) + (pricing.doorCasings[casing] || 0) : 0; const handingApplies = frameApplies || isMachinedSlab; const handingCost = handingApplies ? (pricing.handing[handing] || 0) : 0; const cutDownCost = (customSizing === 'yes' ? pricing.cutDown.yes : 0); /* Use checkbox state */ const labelCost = (addLabel === 'yes' ? pricing.doorLabel.yes : 0); const fireRatedCost = (productLine === 'garage_door' && fireRated === 'yes') ? (pricing.fireRated.yes || 0) : 0; const sillCost = (productLine === 'garage_door') ? (pricing.sillTypes[sillType] || 0) + (pricing.sillFinishes[sillFinish] || 0) + (pricing.sillSizes[sillSize] || 0) : 0; let singleUnitCost = pricing.base + (pricing.series[series] || 0) + coreCost + (pricing.styles[style] || 0) + (pricing.slabMaterials[slabMat] || 0) + (pricing.widths[width] || 0) + (pricing.heights[height] || 0) + (pricing.thicknesses[thickness] || 0) + boreCost + totalHingeCost + cutDownCost + labelCost + fireRatedCost + sillCost + (pricing.machiningOptions[machining] || 0); if (type === 'slab') { total += singleUnitCost + handingCost; } else if (type === 'single_prehung') { total += singleUnitCost + (pricing.types[type] || 0) + frameCost + handingCost; } else if (type === 'double_prehung') { total += (singleUnitCost * 2) + (pricing.types[type] || 0) + frameCost + handingCost; } else if (type === 'bypass' || type === 'bifold') { const numDoors = (parseInt(width) || 30) >= 48 ? 2 : 2; let bypassBifoldUnitCost = pricing.base + (pricing.series[series] || 0) + coreCost + (pricing.styles[style] || 0) + (pricing.slabMaterials[slabMat] || 0) + (pricing.widths[width] || 0) + (pricing.heights[height] || 0) + (pricing.thicknesses[thickness] || 0) + cutDownCost + labelCost + fireRatedCost + sillCost; total += (bypassBifoldUnitCost * numDoors) + (pricing.types[type] || 0); } return total > 0 ? total : 0; }
+        /** Updates the 2D door preview. */
+        function updatePreview() { const productLine = selectedOptions['product-line']; doorPreview.innerHTML = ''; doorPreview.className = 'door-preview'; doorPreview.style.backgroundColor = '#e5e7eb'; if (productLine === 'frame_only') { doorPreview.style.borderWidth = '8px'; doorPreview.style.borderColor = '#a1a1aa'; doorPreview.style.backgroundColor = '#f9fafb'; } else { doorPreview.style.borderWidth = '2px'; doorPreview.style.borderColor = '#4b5563'; const selectedStyle = selectedOptions['door-style']; if (selectedStyle) { doorPreview.classList.add(`door-style-${selectedStyle}`); if (['paneled_2', 'molded_cambridge', 'roman', 'santa_fe', 'rockport', 'shaker_2'].includes(selectedStyle)) { doorPreview.innerHTML = '<div class="door-panel"></div><div class="door-panel"></div>'; } else if (['paneled_6', 'molded_colonist_smooth', 'molded_colonist_textured', 'madison'].includes(selectedStyle)) { doorPreview.innerHTML = `<div class="door-panel"></div><div class="door-panel"><div class="door-panel-inner"></div><div class="door-panel-inner"></div></div><div class="door-panel"></div>`; } else if (['craftsman_iii', 'birkdale', 'conmore', 'shaker_3', 'shaker_3_craftsman'].includes(selectedStyle)) { doorPreview.innerHTML = `<div class="door-panel" style="height:20%"></div><div class="door-panel"></div><div class="door-panel"></div>`; } else if (['shaker_5'].includes(selectedStyle)) { doorPreview.innerHTML = Array(5).fill('<div class="door-panel"></div>').join(''); } else if (selectedStyle === 'french') { doorPreview.innerHTML = '<div class="door-panel"></div>'; const gp = doorPreview.querySelector('.door-panel'); if(gp) { gp.style.backgroundColor = '#cce7f5'; gp.style.borderColor = '#99cdee'; }} } } }
+        /** Finds the text associated with a selected value for a given option group. */
+        function getSelectedText(optionGroup, config = selectedOptions) {
+            const value = config[optionGroup];
+            const placeholderText = '<span class="placeholder">---</span>';
+            // Handle checkbox differently
+            if (optionGroup === 'custom-sizing') {
+                 return config[optionGroup] === 'yes' ? 'Yes' : 'No';
+            }
+            const container = document.querySelector(`.option-container[data-option-group="${optionGroup}"]`);
+            if (value === null || value === undefined || value === '') return placeholderText;
+            if (!container || container.classList.contains('hidden')) { if (optionGroup === 'cut-down-height' || optionGroup === 'label-text') return value || placeholderText; return 'N/A'; }
+            const selectedItem = container.querySelector(`.option-item[data-value="${value}"]`);
+            if (!selectedItem && (optionGroup === 'cut-down-height' || optionGroup === 'label-text')) { return value || placeholderText; }
+            if (selectedItem && selectedItem.classList.contains('hidden')) { const firstVisibleItem = container.querySelector('.option-item:not(.hidden)'); return firstVisibleItem?.dataset.text || firstVisibleItem?.querySelector('span')?.textContent || placeholderText; }
+            if (optionGroup === 'door-width' || optionGroup === 'door-height') { return inchesToFeetInches(value) + (optionGroup === 'door-height' && value === '80' ? ' (Std)' : ''); }
+            return selectedItem?.dataset.text || selectedItem?.querySelector('span')?.textContent || value;
+        }
+        /** Checks if the current configuration is valid to be added to the list */
+        function isConfigurationComplete(config = selectedOptions) { const productLine = config['product-line']; if (!productLine) return false; const isFrameOnly = productLine === 'frame_only'; const type = config['door-type']; if (!type) return false; const requiredBase = ['product-line', 'door-type', 'door-width', 'door-height']; const requiredDoor = ['door-series', 'door-style', 'door-thickness']; const requiredFrame = ['jamb-size', 'jamb-type', 'jamb-material', 'door-stop', 'door-casing']; const requiredHanding = ['door-handing']; const requiredBoreHinge = ['bore-options', 'hinge-type', 'hinge-finish']; const requiredMachining = ['machining-options']; let required = [...requiredBase]; if (!isFrameOnly) required.push(...requiredDoor); if (type === 'slab' && !isFrameOnly) required.push(...requiredMachining); const machining = config['machining-options']; const handingApplies = !isFrameOnly && (type === 'single_prehung' || type === 'double_prehung' || (type === 'slab' && machining === 'machine')); if (handingApplies) required.push(...requiredHanding); const frameApplies = type === 'single_prehung' || type === 'double_prehung' || type === 'single_frame' || type === 'double_frame' || type === 'cased_opening'; if (frameApplies) required.push(...requiredFrame); const boreHingeApplies = !isFrameOnly && (type === 'slab' || type === 'single_prehung' || type === 'double_prehung') && machining !== 'non_machined'; if (boreHingeApplies) required.push(...requiredBoreHinge); for (const key of required) { if (key === 'door-handing' && config[key] === 'none' && handingApplies) return false; /* 'none' is invalid if handing applies */ if (config[key] === null || config[key] === undefined || config[key] === '') return false; } return true; }
+        /** Finds the first missing required option and its tab */
+        function findFirstMissingOption() { const productLine = selectedOptions['product-line']; if (!productLine) return { key: 'product-line', tab: 'product' }; const isFrameOnly = productLine === 'frame_only'; const type = selectedOptions['door-type']; if (!type) return { key: 'door-type', tab: 'product' }; const requiredBase = ['product-line', 'door-type', 'door-width', 'door-height']; const requiredDoor = ['door-series', 'door-style', 'door-thickness']; const requiredFrame = ['jamb-size', 'jamb-type', 'jamb-material', 'door-stop', 'door-casing']; const requiredHanding = ['door-handing']; const requiredBoreHinge = ['bore-options', 'hinge-type', 'hinge-finish']; const requiredMachining = ['machining-options']; let required = [...requiredBase]; if (!isFrameOnly) required.push(...requiredDoor); if (type === 'slab' && !isFrameOnly) required.push(...requiredMachining); const machining = selectedOptions['machining-options']; const handingApplies = !isFrameOnly && (type === 'single_prehung' || type === 'double_prehung' || (type === 'slab' && machining === 'machine')); if (handingApplies) required.push(...requiredHanding); const frameApplies = type === 'single_prehung' || type === 'double_prehung' || type === 'single_frame' || type === 'double_frame' || type === 'cased_opening'; if (frameApplies) required.push(...requiredFrame); const boreHingeApplies = !isFrameOnly && (type === 'slab' || type === 'single_prehung' || type === 'double_prehung') && machining !== 'non_machined'; if (boreHingeApplies) required.push(...requiredBoreHinge); const tabMap = { 'product-line': 'product', 'door-type': 'product', 'door-series': 'product', 'fire-rated': 'size', 'machining-options': 'size', 'door-width': 'size', 'door-height': 'size', 'door-thickness': 'size', 'door-handing': 'size', 'door-style': 'style', 'slab-material': 'style', 'door-core': 'style', 'bore-options': 'bore-hinge', 'bore-backset': 'bore-hinge', 'sill-type': 'bore-hinge', 'sill-finish': 'bore-hinge', 'sill-size': 'bore-hinge', 'hinge-type': 'bore-hinge', 'hinge-finish': 'bore-hinge', 'jamb-size': 'frame', 'jamb-type': 'frame', 'jamb-material': 'frame', 'door-stop': 'frame', 'door-casing': 'frame', 'custom-sizing': 'size', /* Checkbox is in size tab */ 'cut-down-height': 'custom-size', 'bore-vertical-pos': 'custom-size', 'door-label': 'shipping', 'label-text': 'shipping' }; for (const key of required) { const isMissing = selectedOptions[key] === null || selectedOptions[key] === undefined || selectedOptions[key] === '' || (key === 'door-handing' && selectedOptions[key] === 'none' && handingApplies); if (isMissing) return { key: key, tab: tabMap[key] }; } return null; }
+        /** Autofills missing options with the cheapest valid choice */
+        function autoFillMissingOptions() { let changed = false; const missing = findFirstMissingOption(); if (!missing) { hideModal(); return; } let checkAgain = true; while(checkAgain) { checkAgain = false; const required = getRequiredOptions(selectedOptions); for (const key of required) { const isMissing = selectedOptions[key] === null || selectedOptions[key] === undefined || selectedOptions[key] === '' || (key === 'door-handing' && selectedOptions[key] === 'none' && isHandingRequired(selectedOptions)); if (isMissing) { const container = document.querySelector(`.option-container[data-option-group="${key}"]`); if (container) { let cheapestValue = null; let minPrice = Infinity; const items = container.querySelectorAll('.option-item:not(.hidden)'); if (items.length > 0) { items.forEach(item => { const value = item.dataset.value; const tempConfig = {...selectedOptions, [key]: value}; const priceDelta = calculatePrice(tempConfig) - calculatePrice({...selectedOptions, [key]: null}); if (priceDelta < minPrice) { minPrice = priceDelta; cheapestValue = value; } }); } if (cheapestValue !== null) { selectedOptions[key] = cheapestValue; changed = true; checkAgain = true; } } } } if(checkAgain) updateConditionalOptions(); } if (changed) { initializeSelections(); updateDisplayAndPreview(); } hideModal(); }
+         /** Gets the list of required option keys based on current selections */
+         function getRequiredOptions(config) { const productLine = config['product-line']; if (!productLine) return ['product-line']; const isFrameOnly = productLine === 'frame_only'; const type = config['door-type']; if (!type) return ['product-line', 'door-type']; const requiredBase = ['product-line', 'door-type', 'door-width', 'door-height']; const requiredDoor = ['door-series', 'door-style', 'door-thickness']; const requiredFrame = ['jamb-size', 'jamb-type', 'jamb-material', 'door-stop', 'door-casing']; const requiredHanding = ['door-handing']; const requiredBoreHinge = ['bore-options', 'hinge-type', 'hinge-finish']; const requiredMachining = ['machining-options']; let required = [...requiredBase]; if (!isFrameOnly) required.push(...requiredDoor); if (type === 'slab' && !isFrameOnly) required.push(...requiredMachining); const machining = config['machining-options']; const handingApplies = !isFrameOnly && (type === 'single_prehung' || type === 'double_prehung' || (type === 'slab' && machining === 'machine')); if (handingApplies) required.push(...requiredHanding); const frameApplies = type === 'single_prehung' || type === 'double_prehung' || type === 'single_frame' || type === 'double_frame' || type === 'cased_opening'; if (frameApplies) required.push(...requiredFrame); const boreHingeApplies = !isFrameOnly && (type === 'slab' || type === 'single_prehung' || type === 'double_prehung') && machining !== 'non_machined'; if (boreHingeApplies) required.push(...requiredBoreHinge); return required; }
+         /** Checks if handing is currently required */
+         function isHandingRequired(config) { const productLine = config['product-line']; const type = config['door-type']; const machining = config['machining-options']; const isFrameOnly = productLine === 'frame_only'; const isSlab = type === 'slab'; return !isFrameOnly && (type === 'single_prehung' || type === 'double_prehung' || (isSlab && machining === 'machine')); }
+
+        /** Handles click on the Add/Update/Incomplete button */
+        function handleAddUpdateButtonClick() {
+             if (isConfigurationComplete()) {
+                 handleAddUpdateItem();
+             } else {
+                 showModal();
+             }
+        }
+        /** Updates the summary tab content. */
+        function updateSummaryTab() {
+             for (const key in summarySpans) {
+                 const itemElement = summaryItems[key];
+                 if (itemElement && summarySpans[key]) {
+                     const text = getSelectedText(key.replace(/_/g, '-'));
+                     summarySpans[key].innerHTML = text; // Use innerHTML for placeholder
+                     if (key === 'cut_down_height' && text !== '<span class="placeholder">---</span>') summarySpans[key].textContent = `${text}"`;
+                     if (key === 'label_text' && text === '<span class="placeholder">---</span>') summarySpans[key].textContent = '(None)';
+                     // Show/hide based on conditional logic
+                     itemElement.classList.toggle('hidden', summaryItems[key]?.classList.contains('hidden'));
+                 }
+             }
+             // Hide/Show entire groups if all items within are hidden or N/A
+             summaryContainer.querySelectorAll('.summary-group').forEach(group => {
+                 const listItems = group.querySelectorAll('.summary-item');
+                 const allHidden = Array.from(listItems).every(item => item.classList.contains('hidden'));
+                 group.classList.toggle('hidden', allHidden);
+             });
+        }
+        /** Updates the display, price, preview, and conditional options. */
+        function updateDisplayAndPreview() { updateConditionalOptions(); updateSummaryTab(); const price = calculatePrice(); const isComplete = isConfigurationComplete(); totalPriceDisplay.textContent = isComplete ? `$${price.toFixed(2)}` : '$---.--'; priceUpdateDiv.classList.remove('bg-indigo-50'); if (isComplete) { priceUpdateDiv.classList.add('bg-indigo-100'); setTimeout(() => { priceUpdateDiv.classList.remove('bg-indigo-100'); priceUpdateDiv.classList.add('bg-indigo-50'); }, 150); } else { priceUpdateDiv.classList.add('bg-indigo-50'); } updatePreview(); addUpdateButton.disabled = false; addUpdateButton.classList.toggle('incomplete', !isComplete && !editingItemId); addUpdateButton.textContent = editingItemId ? 'Update Item' : (isComplete ? 'Add to List' : 'Complete Selection...'); addUpdateButton.classList.toggle('update-mode', !!editingItemId); viewListButton.classList.toggle('hidden', configurationList.length === 0); }
+        /** Sets the initial visual state based on the current selectedOptions. */
+        function initializeSelections(groupsToUpdate = Object.keys(selectedOptions)) { groupsToUpdate.forEach(group => { const container = document.querySelector(`.option-container[data-option-group="${group}"]`); if (container) { const items = container.querySelectorAll('.option-item'); items.forEach(item => { const shouldBeSelected = item.dataset.value === selectedOptions[group]; const isVisible = !item.classList.contains('hidden'); item.classList.toggle('selected', shouldBeSelected && isVisible); }); } const inputElement = document.querySelector(`[name="${group}"]`); if (inputElement && (inputElement.type === 'text' || inputElement.type === 'number')) { if (document.activeElement !== inputElement) { inputElement.value = selectedOptions[group]; } } else if (inputElement && inputElement.type === 'checkbox') { inputElement.checked = selectedOptions[group] === 'yes'; } }); }
+         /** Creates HTML for a single configuration item in the list */
+         function createListItemHTML(item) { const unitPrice = calculatePrice(item); const lineItemTotal = unitPrice * item.quantity; let summary = `${item.quantity} x ${getSelectedText('product-line', item)} - ${getSelectedText('door-type', item)}`; if (item['product-line'] !== 'frame_only') { summary += ` (${getSelectedText('door-series', item)}, ${getSelectedText('door-style', item)})`; } summary += ` - ${getSelectedText('door-width', item)} x ${getSelectedText('door-height', item)}`; return `<div class="config-list-item" data-id="${item.id}"><div class="config-list-item-details text-xs"><p class="font-semibold mb-1">${summary}</p><p>Unit Price: $${unitPrice.toFixed(2)}</p><p>Line Total: <strong>$${lineItemTotal.toFixed(2)}</strong></p></div><div class="config-list-item-actions"><button class="config-list-button edit-button" data-id="${item.id}">Edit</button><button class="config-list-button remove-button" data-id="${item.id}">Remove</button></div></div>`; }
+        /** Renders the list of saved configurations */
+        function renderConfigurationList() { if (configurationList.length === 0) { configListDiv.innerHTML = ''; emptyListMessage.classList.remove('hidden'); listTotalPriceDiv.textContent = 'Total Order Price: $0.00'; } else { emptyListMessage.classList.add('hidden'); configListDiv.innerHTML = configurationList.map(createListItemHTML).join(''); const totalListPrice = configurationList.reduce((sum, item) => sum + (calculatePrice(item) * item.quantity), 0); listTotalPriceDiv.textContent = `Total Order Price: $${totalListPrice.toFixed(2)}`; configListDiv.querySelectorAll('.edit-button').forEach(btn => btn.addEventListener('click', handleEditItem)); configListDiv.querySelectorAll('.remove-button').forEach(btn => btn.addEventListener('click', handleRemoveItem)); } viewListButton.classList.toggle('hidden', configurationList.length === 0); }
+         /** Handles Add/Update button click */
+         function handleAddUpdateItem() {
+             const currentConfig = { ...selectedOptions, quantity: parseInt(quantityInput.value) || 1 };
+             let wasEditing = false;
+             let previousConfig = null;
+
+             if (editingItemId) {
+                 const index = configurationList.findIndex(item => item.id === editingItemId);
+                 if (index !== -1) {
+                     previousConfig = configurationList[index];
+                     configurationList[index] = { ...currentConfig, id: editingItemId };
+                 }
+                 editingItemId = null;
+                 wasEditing = true;
+             } else {
+                 previousConfig = {...selectedOptions}; // Store current config before adding new
+                 configurationList.push({ ...currentConfig, id: generateId() });
+             }
+             renderConfigurationList();
+             if (!wasEditing) {
+                 showPostAddModal(previousConfig); // Show prompt after adding NEW item
+             } else {
+                 resetConfigurator(); // Reset immediately if updating
+             }
+         }
+         /** Handles Edit button click */
+         function handleEditItem(event) { const idToEdit = event.target.dataset.id; const itemToEdit = configurationList.find(item => item.id === idToEdit); if (!itemToEdit) return; selectedOptions = { ...itemToEdit }; editingItemId = idToEdit; quantityInput.value = selectedOptions.quantity; initializeSelections(); updateDisplayAndPreview(); showConfiguratorView(); switchTab({ currentTarget: document.querySelector('.tab-button[data-tab="product"]') }); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+         /** Handles Remove button click */
+         function handleRemoveItem(event) { const idToRemove = event.target.dataset.id; configurationList = configurationList.filter(item => item.id !== idToRemove); renderConfigurationList(); if (editingItemId === idToRemove) resetConfigurator(); }
+         /** Resets the configurator to default state (nulls) */
+         function resetConfigurator() { editingItemId = null; selectedOptions = getDefaultOptions(); quantityInput.value = 1; optionsArea.querySelectorAll('.option-item.selected').forEach(item => item.classList.remove('selected')); cutDownHeightInput.value = ''; labelTextInput.value = ''; document.getElementById('custom-sizing-checkbox').checked = false; /* Uncheck checkbox */ updateDisplayAndPreview(); }
+         /** Returns the default options object (nulls) */
+         function getDefaultOptions() { return { 'product-line': null, 'door-type': null, 'door-series': null, 'fire-rated': 'no', 'door-width': null, 'door-height': null, 'door-thickness': null, 'door-handing': 'none', 'door-style': null, 'slab-material': null, 'door-core': null, 'bore-options': null, 'bore-backset': '2.375', 'sill-type': 'aluminum', 'sill-finish': 'mill', 'sill-size': 'standard', 'hinge-type': null, 'hinge-finish': null, 'jamb-size': null, 'jamb-type': 'flat', 'jamb-material': null, 'door-stop': null, 'door-casing': 'none', 'custom-sizing': 'no', /* Use checkbox state */ 'cut-down-height': '', 'bore-vertical-pos': 'top_44', 'door-label': 'no', 'label-text': '', quantity: 1, 'machining-options': null }; }
+
+        // --- Event Listeners ---
+        tabButtons.forEach(button => button.addEventListener('click', switchTab));
+        optionsArea.addEventListener('click', handleOptionClick);
+        cutDownHeightInput.addEventListener('input', handleInputChange);
+        labelTextInput.addEventListener('input', handleInputChange);
+        quantityInput.addEventListener('change', handleQuantityChange);
+        qtyDownButton.addEventListener('click', handleQuantityButtonClick);
+        qtyUpButton.addEventListener('click', handleQuantityButtonClick);
+        addUpdateButton.addEventListener('click', handleAddUpdateButtonClick);
+        viewListButton.addEventListener('click', showListView);
+        backToConfigButton.addEventListener('click', showConfiguratorView);
+        optionsArea.addEventListener('click', (event) => { if (event.target.matches('.prev-tab, .next-tab')) { handlePrevNextClick(event); } });
+        modalCloseButton.addEventListener('click', hideModal);
+        modalGotoButton.addEventListener('click', () => { const missing = findFirstMissingOption(); if (missing) { const targetTabButton = document.querySelector(`.tab-button[data-tab="${missing.tab}"]`); if (targetTabButton) { switchTab({ currentTarget: targetTabButton }); const missingGroup = document.querySelector(`.option-container[data-option-group="${missing.key}"]`); if(missingGroup) { missingGroup.classList.add('highlight'); setTimeout(() => { missingGroup.classList.remove('highlight'); }, 1000); missingGroup.scrollIntoView({ behavior: 'smooth', block: 'center' }); } } } hideModal(); });
+        modalAutofillButton.addEventListener('click', autoFillMissingOptions);
+        modalOverlay.addEventListener('click', (event) => { if (event.target === modalOverlay) hideModal(); });
+        postAddModalCloseButton.addEventListener('click', hidePostAddModal);
+        postAddCopyButton.addEventListener('click', () => { selectedOptions = { ...lastAddedConfig, quantity: 1 }; quantityInput.value = 1; initializeSelections(); updateDisplayAndPreview(); hidePostAddModal(); });
+        postAddNewButton.addEventListener('click', () => { resetConfigurator(); hidePostAddModal(); });
+        postAddModalOverlay.addEventListener('click', (event) => { if (event.target === postAddModalOverlay) hidePostAddModal(); });
+        // Listener for the new checkbox
+        document.getElementById('custom-sizing-checkbox').addEventListener('change', (event) => {
+             selectedOptions['custom-sizing'] = event.target.checked ? 'yes' : 'no';
+             updateDisplayAndPreview();
+        });
+
+        // --- Initial Setup ---
+        document.addEventListener('DOMContentLoaded', () => {
+            selectedOptions = getDefaultOptions();
+            initializeSelections();
+            updateDisplayAndPreview();
+            renderConfigurationList();
+            showConfiguratorView();
+        });
+
+    </script>
+</body>
+</html>

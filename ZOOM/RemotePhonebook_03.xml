@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Edited BY JRH ON 2025-05-13 -->
+<YealinkIPPhoneBook>
+  <Title>Yealink</Title>
+  <Menu Name="3: Store Extensions">
+    <Unit Name="03: Page All" Phone1="3999" Phone2="" Phone3="" default_photo="Resource:"/>
+    <Unit Name="Cameron McCuller" Phone1="3050" Phone2="" Phone3="" default_photo="Resource:"/>
+    <Unit Name="Cameron McCuller [CELL]" Phone1="3051" Phone2="" Phone3="" default_photo="Resource:"/>
+    <Unit Name="James Pieper" Phone1="3010" Phone2="" Phone3="" default_photo="Resource:"/>
+    <Unit Name="James Pieper [CELL]" Phone1="3011" Phone2="" Phone3="" default_photo="Resource:"/>
+    <Unit Name="Joseph Lopez (WIP)" Phone1="3020" Phone2="" Phone3="" default_photo="Resource:"/>
+    <Unit Name="Sam Luce (WIP)" Phone1="3030" Phone2="" Phone3="" default_photo="Resource:"/>
+    <Unit Name="Z: 2nd Office" Phone1="3003" Phone2="" Phone3="" default_photo="Resource:"/>
+    <Unit Name="Z: Counter 1" Phone1="3001" Phone2="" Phone3="" default_photo="Resource:"/>
+    <Unit Name="Z: Counter 2" Phone1="3002" Phone2="" Phone3="" default_photo="Resource:"/>
+  </Menu>
+  <Menu Name="A: Employees">
+    <Unit Name="CONTACT JORDAN" Phone1="8007" Phone2="" Phone3="" default_photo="Resource:"/>
+  </Menu>
+  <Menu Name="B: Suppliers">
+    <Unit Name="CONTACT JORDAN" Phone1="8007" Phone2="" Phone3="" default_photo="Resource:"/>
+  </Menu>
+  <Menu Name="C: Customers">
+    <Unit Name="CONTACT JORDAN" Phone1="8007" Phone2="" Phone3="" default_photo="Resource:"/>
+  </Menu>
+  <Menu Name="D: OTHER">
+    <Unit Name="CONTACT JORDAN" Phone1="8007" Phone2="" Phone3="" default_photo="Resource:"/>
+  </Menu>
+</YealinkIPPhoneBook>
