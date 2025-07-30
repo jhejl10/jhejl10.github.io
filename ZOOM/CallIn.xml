@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<CallIn>
+  <Disable>
+    <Key Type="Empty"/>
+    <Key Type="Switch"/>
+    <Key Type="Decline"/>
+    <Key Type="Extend" />
+   </Disable>
+  <Enable>
+    <Key Type="Answer"/>
+    <Key Type="Empty"/>
+    <Key Type="Silence"/>
+    <Key Type="Reject"/>
+  </Enable>
+  <Default>
+    <Key Type="Answer"/>
+    <Key Type="Forward"/>
+    <Key Type="Silence"/>
+    <Key Type="Reject"/>
+  </Default>
+</CallIn>
