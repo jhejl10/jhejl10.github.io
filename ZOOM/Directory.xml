@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<root_favorite_set>
+    <item id_name="localdirectory" display_name="Woodson Directory" priority="1" enable="1" dev="common"/>
+    <item id_name="remotedirectory" display_name="Remote Phone Book" priority="2" enable="1" dev="common"/>
+	<item id_name="ldap" display_name="Zoom Directory" priority="3" enable="0" dev="T19 T21 T23 T40 T40G T27 T27G T29 T41 T42 T42S T41S T46 T46S T54S T52 T48 T48S T49 T61 T66 T69 T69S CP860 CP920 T54W T53W T53 T57W"/>
+    <item id_name="history" display_name="History" priority="4" enable="1" dev="common"/>
+    <item id_name="networkcalllog" display_name="Network Call Log" priority="5" enable="0" dev="common"/>
+    <item id_name="broadsoftdirectory" display_name="Network Directory" priority="6" enable="0" dev="common"/>
+	<item id_name="plcmdirectory" display_name="Phonebook" priority="7" enable="0" />      
+	<item id_name="gabdirectory" display_name="Global Address Book" priority="8" enable="0" />  
+	<item id_name="pabdirectory" display_name="Personal Address Book" priority="9" enable="0" />
+	<item id_name="metaswitchcontacts" display_name="Network Contacts" priority="10" enable="0" />
+	<item id_name="metaswitchcalllog" display_name="Network Call List" priority="11" enable="0" />
+	<item id_name="uc_buddies" display_name="Buddies" priority="12" enable="0" dev="T29 T46 T46S T54S T52 T48 T48S T49 T69 T69S T54W T53W T53 T57W"/>
+	<item id_name="mobilecontant" display_name="Mobile Contacts" priority="13" enable="1" dev="T29 T46 T46S T54S T52 T48 T48S T42S T41S T27G CP920 T54W T53W T53 T57W"/>
+	<item id_name="blacklist" display_name="Blacklist" priority="14" enable="0" />
+	<item id_name="googledirectory" display_name="Google Contacts" priority="15" enable="0" />
+	<item id_name="sharedirectory" display_name="Shared Directory" priority="16" enable="0" dev="T54W T53W T53 T57W" />
+	<item id_name="dectintercom" display_name="Dect Intercom" priority="17" enable="0" dev="T54W T53W T53 T57W" />
+	<item id_name="presencelist" display_name="Presence List" priority="18" enable="1"  />  
+	<item id_name="uc_calllog" display_name="Network CallLog" priority="19" enable="0"  />
+</root_favorite_set>
