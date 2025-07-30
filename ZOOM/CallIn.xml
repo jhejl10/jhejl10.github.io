@@ -8,7 +8,6 @@
    </Disable>
   <Enable>
     <Key Type="Answer"/>
-    <Key Type="Empty"/>
     <Key Type="Silence"/>
     <Key Type="Reject"/>
   </Enable>
