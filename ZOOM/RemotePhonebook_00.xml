@@ -24,11 +24,13 @@
 <Unit Name="Cody Kunkel" Phone1="8111" Phone2="" Phone3=""/>
 <Unit Name="Dana Mondey" Phone1="8101" Phone2="" Phone3=""/>
 <Unit Name="Jason Mitschke" Phone1="8108" Phone2="" Phone3=""/>	
+<Unit Name="John Walker" Phone1="8117" Phone2="" Phone3=""/>	
 <Unit Name="Jordan Hejl" Phone1="8110" Phone2="" Phone3=""/>
 <Unit Name="Kate Borroni" Phone1="8105" Phone2="" Phone3=""/>	
 <Unit Name="Kim Rowe" Phone1="8107" Phone2="" Phone3=""/>
 <Unit Name="Lauren Johnson" Phone1="8102" Phone2="" Phone3=""/>
-<Unit Name="Nicholas Braaton" Phone1="8112" Phone2="" Phone3=""/>	
+<Unit Name="Nicholas Braaton" Phone1="8112" Phone2="" Phone3=""/>
+<Unit Name="Philip Chapman" Phone1="8120" Phone2="" Phone3=""/>	
 <Unit Name="Ryneasha Reed" Phone1="8106" Phone2="" Phone3=""/>
 <Unit Name="Stu Chapman" Phone1="8109" Phone2="" Phone3=""/>
 <Unit Name="Sean Rosenbaum" Phone1="8113" Phone2="" Phone3=""/>
@@ -46,9 +48,9 @@
 
 <!-- Managers -->
 <Unit Name="Matt Grissom" Phone1="1010" Phone2="" Phone3=""/>
-<Unit Name="Mike Snyder" Phone1="2010" Phone2="" Phone3=""/>
+<Unit Name="Nicholas Braaton" Phone1="2010" Phone2="" Phone3=""/>
 <Unit Name="James Pieper" Phone1="3010" Phone2="" Phone3=""/>	
-<Unit Name="John Walker" Phone1="4010" Phone2="" Phone3=""/>	
+<Unit Name="Mike Snyder" Phone1="4010" Phone2="" Phone3=""/>	
 <Unit Name="JR Noel" Phone1="5010" Phone2="" Phone3=""/>
 <Unit Name="Mexia Manager" Phone1="6010" Phone2="" Phone3=""/>
 <Unit Name="John White" Phone1="7010" Phone2="" Phone3=""/>
@@ -62,14 +64,17 @@
 <Unit Name="Bobby Doak" Phone1="7050" Phone2="" Phone3=""/>
 
 <!-- Asst Managers -->
+<Unit Name="Steven Zeig" Phone1="2020" Phone2="" Phone3=""/>
+<Unit Name="Troy Helms" Phone1="2030" Phone2="" Phone3=""/>
 <Unit Name="Joseph Lopez" Phone1="3020" Phone2="" Phone3=""/>
 <Unit Name="Robert Hines" Phone1="5020" Phone2="" Phone3=""/>
 <Unit Name="Kasey Payne" Phone1="6020" Phone2="" Phone3=""/>
 <Unit Name="Donna Dickson" Phone1="7020" Phone2="" Phone3=""/>
 
 <!-- Other -->	
-<Unit Name="Jen Bishop" Phone1="2030" Phone2="" Phone3=""/>	
+<Unit Name="Jen Bishop" Phone1="7030" Phone2="" Phone3=""/>	
 <Unit Name="Terri Perry" Phone1="5030" Phone2="" Phone3=""/>
+<Unit Name="Sam Luce" Phone1="3030" Phone2="" Phone3=""/>
 </Menu>
 
 <Menu Name="C: Employees (CELL EXT)">
@@ -82,9 +87,9 @@
 <Unit Name="[CELL] Bobby Doak" Phone1="7051" Phone2="" Phone3=""/>
 
 <Unit Name="[CELL] Matthew Grissom" Phone1="1011" Phone2="" Phone3=""/>
-<Unit Name="[CELL] Mike Snyder" Phone1="2011" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Nicholas Braaton" Phone1="2011" Phone2="" Phone3=""/>
 <Unit Name="[CELL] James Pieper" Phone1="3011" Phone2="" Phone3=""/>
-<Unit Name="[CELL] John Walker" Phone1="4011" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Mike Snyder" Phone1="4011" Phone2="" Phone3=""/>
 <Unit Name="[CELL] JR Noel" Phone1="5011" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Mexia Manager" Phone1="6011" Phone2="" Phone3=""/>
 <Unit Name="[CELL] John White" Phone1="7011" Phone2="" Phone3=""/>
