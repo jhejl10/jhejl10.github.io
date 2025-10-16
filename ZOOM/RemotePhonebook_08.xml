@@ -19,16 +19,18 @@
 <!-- Wholesale -->
 <Unit Name="Ann Chapman" Phone1="8103" Phone2="" Phone3=""/>
 <Unit Name="Brian Broaddus" Phone1="8116" Phone2="" Phone3=""/>
-<Unit Name="Cameron McCuller" Phone1="8115" Phone2="" Phone3=""/>		
+<Unit Name="Cameron McCuller" Phone1="8115" Phone2="" Phone3=""/>
 <Unit Name="Christy Doss" Phone1="8104" Phone2="" Phone3=""/>
 <Unit Name="Cody Kunkel" Phone1="8111" Phone2="" Phone3=""/>
 <Unit Name="Dana Mondey" Phone1="8101" Phone2="" Phone3=""/>
-<Unit Name="Jason Mitschke" Phone1="8108" Phone2="" Phone3=""/>	
+<Unit Name="Jason Mitschke" Phone1="8108" Phone2="" Phone3=""/>
+<Unit Name="John Walker" Phone1="8117" Phone2="" Phone3=""/>
 <Unit Name="Jordan Hejl" Phone1="8110" Phone2="" Phone3=""/>
-<Unit Name="Kate Borroni" Phone1="8105" Phone2="" Phone3=""/>	
+<Unit Name="Kate Borroni" Phone1="8105" Phone2="" Phone3=""/>
 <Unit Name="Kim Rowe" Phone1="8107" Phone2="" Phone3=""/>
 <Unit Name="Lauren Johnson" Phone1="8102" Phone2="" Phone3=""/>
-<Unit Name="Nicholas Braaton" Phone1="8112" Phone2="" Phone3=""/>	
+<Unit Name="Nicholas Braaton" Phone1="8112" Phone2="" Phone3=""/>
+<Unit Name="Philip Chapman" Phone1="8120" Phone2="" Phone3=""/>	
 <Unit Name="Ryneasha Reed" Phone1="8106" Phone2="" Phone3=""/>
 <Unit Name="Stu Chapman" Phone1="8109" Phone2="" Phone3=""/>
 <Unit Name="Sean Rosenbaum" Phone1="8113" Phone2="" Phone3=""/>
@@ -46,9 +48,9 @@
 
 <!-- Managers -->
 <Unit Name="Matt Grissom" Phone1="1010" Phone2="" Phone3=""/>
-<Unit Name="Mike Snyder" Phone1="2010" Phone2="" Phone3=""/>
+<Unit Name="Nicolas Braaton" Phone1="2010" Phone2="" Phone3=""/>
 <Unit Name="James Pieper" Phone1="3010" Phone2="" Phone3=""/>	
-<Unit Name="John Walker" Phone1="4010" Phone2="" Phone3=""/>	
+<Unit Name="Mike Snyder" Phone1="4010" Phone2="" Phone3=""/>	
 <Unit Name="JR Noel" Phone1="5010" Phone2="" Phone3=""/>
 <Unit Name="Mexia Manager" Phone1="6010" Phone2="" Phone3=""/>
 <Unit Name="John White" Phone1="7010" Phone2="" Phone3=""/>
@@ -68,7 +70,7 @@
 <Unit Name="Donna Dickson" Phone1="7020" Phone2="" Phone3=""/>
 
 <!-- Other -->	
-<Unit Name="Jen Bishop" Phone1="2030" Phone2="" Phone3=""/>	
+<Unit Name="Jen Bishop" Phone1="7030" Phone2="" Phone3=""/>	
 <Unit Name="Terri Perry" Phone1="5030" Phone2="" Phone3=""/>
 </Menu>
 
@@ -79,11 +81,13 @@
 <Unit Name="[CELL] Cody Kunkel" Phone1="+19794515188" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Dana Mondey" Phone1="+19794060082" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Jason Mitschke" Phone1="+19797771366" Phone2="" Phone3=""/>
+<Unit Name="[CELL] John Walker" Phone1="+15124300187" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Jordan Hejl" Phone1="+19792184176" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Kate Borroni" Phone1="+19792185438" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Lauren Johnson" Phone1="+19794503930" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Kim Rowe" Phone1="+19792297363" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Nicholas Braaton" Phone1="+19792293812" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Philip Chapman" Phone1="+9792194179" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Sean Rosenbaum" Phone1="+19794519125" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Stu Chapman" Phone1="+16823519062" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Troy Mikulin" Phone1="+19794122386" Phone2="" Phone3=""/>
@@ -96,13 +100,15 @@
 <Unit Name="[CELL] Bobby Doak" Phone1="+19032080418" Phone2="" Phone3=""/>
 
 <Unit Name="[CELL] Matthew Grissom" Phone1="+17134028614" Phone2="" Phone3=""/>
-<Unit Name="[CELL] Mike Snyder" Phone1="+12703196066" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Bryan Manager" Phone1="+19792293812" Phone2="" Phone3=""/>	
 <Unit Name="[CELL] James Pieper" Phone1="+19793244789" Phone2="" Phone3=""/>
-<Unit Name="[CELL] John Walker" Phone1="+15124300187" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Mike Snyder" Phone1="+12703196066" Phone2="" Phone3=""/>	
 <Unit Name="[CELL] JR Noel" Phone1="+12542242010" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Mexia Manager" Phone1="+12542242010" Phone2="" Phone3=""/>
 <Unit Name="[CELL] John White" Phone1="+19196717159" Phone2="" Phone3=""/>
 
+<Unit Name="[CELL] Steven Zeig" Phone1="+19795713194" Phone2="" Phone3=""/>	
+<Unit Name="[CELL] Troy Helms" Phone1="+19796763392" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Jen Bishop" Phone1="+19035124543" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Joseph Lopez" Phone1="+19792292382" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Josh Lay" Phone1="+19795408626" Phone2="" Phone3=""/>
