@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Edited BY JRH ON 2025-07-30 -->
+<YealinkIPPhoneBook>
+<Title>Yealink</Title>
+
+
+	<Menu Name="1: Wholesale (CELL PHONE #)">
+<Unit Name="[CELL] Ann Chapman"			Phone1="+19798202135" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Brian Broaddus"		Phone1="+19792190195" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Cameron McCuller"	Phone1="+19798203442" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Cody Kunkel"			Phone1="+19794515188" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Dana Mondey"			Phone1="+19794060082" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Jason Mitschke"		Phone1="+19797771366" Phone2="" Phone3=""/>
+<Unit Name="[CELL] John Walker"			Phone1="+15124300187" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Jordan Hejl"			Phone1="+19792184176" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Kate Borroni"		Phone1="+19792185438" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Lauren Johnson"		Phone1="+19794503930" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Kim Rowe"			Phone1="+19792297363" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Philip Chapman"		Phone1="+19792194179" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Sean Rosenbaum"		Phone1="+19794519125" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Stu Chapman"			Phone1="+16823519062" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Troy Mikulin"		Phone1="+19794122386" Phone2="" Phone3=""/>
+	</Menu>
+
+	<Menu Name="2: Sales Reps (CELL PHONE #)">
+<Unit Name="[CELL] Anthony Blazek" 		Phone1="+19032080155" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Andy Golden" 		Phone1="+19798201783" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Cameron McCuller"	Phone1="+19798203442" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Matt Exner"			Phone1="+19795400888" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Jason White"			Phone1="" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Bobby Doak"			Phone1="+19032080418" Phone2="" Phone3=""/>
+	</Menu>
+	
+	<Menu Name="3: Managers (CELL PHONE #)">
+<Unit Name="[CELL] Matthew Grissom"		Phone1="+17134028614" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Nicholas Braaton"	Phone1="+19792293812" Phone2="" Phone3=""/>
+<Unit Name="[CELL] James Pieper"		Phone1="+19793244789" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Mike Snyder"			Phone1="+12703196066" Phone2="" Phone3=""/>	
+<Unit Name="[CELL] JR Noel"				Phone1="+12542242010" Phone2="" Phone3=""/>
+<Unit Name="[CELL] John White"			Phone1="+19196717159" Phone2="" Phone3=""/>
+	</Menu>
+
+	<Menu Name="4: Asst Managers (CELL PHONE #)">
+<Unit Name="[CELL] Steven Zeig"			Phone1="+19795713194" Phone2="" Phone3=""/>	
+<Unit Name="[CELL] Troy Helms"			Phone1="+19796763392" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Joseph Lopez"		Phone1="+19792292382" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Josh Lay"			Phone1="+19795408626" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Kasey Payne"			Phone1="" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Donna Dickson"		Phone1="+19365813865" Phone2="" Phone3=""/>
+	</Menu>
+</YealinkIPPhoneBook>

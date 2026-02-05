@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Edited BY JRH ON 2025-07-30 -->
+<YealinkIPPhoneBook>
+<Title>Yealink</Title>
+
+	<Menu Name="1. Store EXTs">
+<Unit Name="01: Brenham"	Phone1="1000"/>
+<Unit Name="02: Bryan"		Phone1="2000"/>
+<Unit Name="03: Caldwell"	Phone1="3000"/>
+<Unit Name="04: Lexington"	Phone1="4000"/>
+<Unit Name="05: Groesbeck"	Phone1="5000"/>
+<Unit Name="06: Mexia"		Phone1="6000"/>
+<Unit Name="07: Buffalo"	Phone1="7000"/>
+<Unit Name="08: Wholesale"	Phone1="8000"/>
+	</Menu>
+
+<!-- Managers -->
+	<Menu Name="3. Managers">
+<Unit Name="01: Matt Grissom"		Phone1="1010" Phone2="" Phone3=""/>
+<Unit Name="02: Nicholas Braaton"	Phone1="2010" Phone2="" Phone3=""/>
+<Unit Name="03: James Pieper"		Phone1="3010" Phone2="" Phone3=""/>	
+<Unit Name="04: Mike Snyder"		Phone1="4010" Phone2="" Phone3=""/>	
+<Unit Name="05: JR Noel"			Phone1="5010" Phone2="" Phone3=""/>
+<Unit Name="06: JR Notel"			Phone1="6010" Phone2="" Phone3=""/>
+<Unit Name="07: John White"			Phone1="7010" Phone2="" Phone3=""/>
+
+<Unit Name="[CELL] Matt Grissom"		Phone1="1011" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Nicholas Braaton"	Phone1="2011" Phone2="" Phone3=""/>
+<Unit Name="[CELL] James Pieper"		Phone1="3011" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Mike Snyder"			Phone1="4011" Phone2="" Phone3=""/>
+<Unit Name="[CELL] JR Noel"				Phone1="5011" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Mexia Manager"		Phone1="6011" Phone2="" Phone3=""/>
+<Unit Name="[CELL] John White"			Phone1="7011" Phone2="" Phone3=""/>
+	</Menu>
+	
+<!-- Sales Reps -->
+	<Menu Name="2. Sales Reps">
+<Unit Name="Anthony Blazek"		Phone1="1050" Phone2="" Phone3=""/>
+<Unit Name="Andy Golden" 		Phone1="2050" Phone2="" Phone3=""/>
+<Unit Name="Cameron McCuller"	Phone1="3050" Phone2="" Phone3=""/>
+<Unit Name="Matthew Exner"		Phone1="4050" Phone2="" Phone3=""/>
+<Unit Name="Jason White"		Phone1="4040" Phone2="" Phone3=""/>
+<Unit Name="Bobby Doak"			Phone1="7050" Phone2="" Phone3=""/>
+
+<Unit Name="[CELL] Anthony Blazek"		Phone1="1051" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Andy Golden"			Phone1="2051" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Cameron McCuller"	Phone1="3051" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Matt Exner"			Phone1="4051" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Jason White"			Phone1="4041" Phone2="" Phone3=""/>
+<Unit Name="[CELL] Bobby Doak"			Phone1="7051" Phone2="" Phone3=""/>
+	</Menu>
+
+
+<!-- Asst Managers -->
+	<Menu Name="4. Asst. Managers">
+<Unit Name="02: Steven Zeig"		Phone1="2020" Phone2="" Phone3=""/>
+<Unit Name="02: Troy Helms"			Phone1="2030" Phone2="" Phone3=""/>
+<Unit Name="03: Joseph Lopez"		Phone1="3020" Phone2="" Phone3=""/>
+<Unit Name="05: Robert Hines"		Phone1="5020" Phone2="" Phone3=""/>
+<Unit Name="06: Kasey Payne"		Phone1="6020" Phone2="" Phone3=""/>
+<Unit Name="07: Donna Dickson"		Phone1="7020" Phone2="" Phone3=""/>
+	</Menu>
+</YealinkIPPhoneBook>

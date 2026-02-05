@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Edited BY JRH ON 2025-07-30 -->
+<YealinkIPPhoneBook>
+<Title>Yealink</Title>
+
+	<Menu Name="1. Wholesale Department EXTs">
+<Unit Name="01: Operator" 				Phone1="8001"/>
+<Unit Name="02: Accounts Receivable"	Phone1="8002"/>
+<Unit Name="03: Accounts Payable"		Phone1="8003"/>
+<Unit Name="04: Human Resources"		Phone1="8004"/>
+<Unit Name="05: Dispatch &amp; Fleet"	Phone1="8005"/>
+<Unit Name="06: Online Support"			Phone1="8006"/>
+<Unit Name="07: IT Support"				Phone1="8007"/>
+<Unit Name="08: Purchasing"				Phone1="8008"/>
+<Unit Name="09: Sales"					Phone1="8009"/>
+<Unit Name="10: Door Shop"				Phone1="8010"/>  
+	</Menu>
+	
+<!-- Wholesale -->
+	<Menu Name="2. Wholesale User EXTs">
+<Unit Name="Dana Mondey"		Phone1="8101" Phone2="" Phone3=""/>
+<Unit Name="Lauren Johnson"		Phone1="8102" Phone2="" Phone3=""/>	
+<Unit Name="Ann Chapman"		Phone1="8103" Phone2="" Phone3=""/>
+<Unit Name="Christy Doss"		Phone1="8104" Phone2="" Phone3=""/>
+<Unit Name="Kate Borroni"		Phone1="8105" Phone2="" Phone3=""/>	
+<Unit Name="Ryneasha Reed"		Phone1="8106" Phone2="" Phone3=""/>
+<Unit Name="Kim Rowe"			Phone1="8107" Phone2="" Phone3=""/>
+<Unit Name="Jason Mitschke"		Phone1="8108" Phone2="" Phone3=""/>	
+<Unit Name="Stu Chapman"		Phone1="8109" Phone2="" Phone3=""/>
+<Unit Name="Jordan Hejl"		Phone1="8110" Phone2="" Phone3=""/>
+<Unit Name="Cody Kunkel"		Phone1="8111" Phone2="" Phone3=""/>
+
+<Unit Name="Sean Rosenbaum"		Phone1="8113" Phone2="" Phone3=""/>
+<Unit Name="Troy Mikulin"		Phone1="8114" Phone2="" Phone3=""/>
+<Unit Name="Cameron McCuller"	Phone1="8115" Phone2="" Phone3=""/>		
+<Unit Name="Brian Broaddus"		Phone1="8116" Phone2="" Phone3=""/>
+<Unit Name="John Walker"		Phone1="8117" Phone2="" Phone3=""/>	
+
+
+<Unit Name="Philip Chapman"		Phone1="8120" Phone2="" Phone3=""/>	
+	</Menu>
+	
+	<Menu Name="3. Store EXTs">
+<Unit Name="00: Wholesale"	Phone1="8000"/>
+<Unit Name="01: Brenham"	Phone1="1000"/>
+<Unit Name="02: Bryan"		Phone1="2000"/>
+<Unit Name="03: Caldwell"	Phone1="3000"/>
+<Unit Name="04: Lexington"	Phone1="4000"/>
+<Unit Name="05: Groesbeck"	Phone1="5000"/>
+<Unit Name="06: Mexia"		Phone1="6000"/>
+<Unit Name="07: Buffalo"	Phone1="7000"/>
+	</Menu>
+
+
+</YealinkIPPhoneBook>
