@@ -3,7 +3,7 @@
 <YealinkIPPhoneBook>
 <Title>Yealink</Title>
 
-	<Menu Name="1. Wholesale Department EXTs">
+	<Menu Name="1. Wholesale Departments">
 <Unit Name="01: Operator" 				Phone1="8001"/>
 <Unit Name="02: Accounts Receivable"	Phone1="8002"/>
 <Unit Name="03: Accounts Payable"		Phone1="8003"/>
@@ -17,7 +17,7 @@
 	</Menu>
 	
 <!-- Wholesale -->
-	<Menu Name="2. Wholesale User EXTs">
+	<Menu Name="2. Wholesale Users">
 <Unit Name="Dana Mondey"		Phone1="8101" Phone2="" Phone3=""/>
 <Unit Name="Lauren Johnson"		Phone1="8102" Phone2="" Phone3=""/>	
 <Unit Name="Ann Chapman"		Phone1="8103" Phone2="" Phone3=""/>
@@ -40,7 +40,7 @@
 <Unit Name="Philip Chapman"		Phone1="8120" Phone2="" Phone3=""/>	
 	</Menu>
 	
-	<Menu Name="3. Store EXTs">
+	<Menu Name="3. Stores">
 <Unit Name="00: Wholesale"	Phone1="8000"/>
 <Unit Name="01: Brenham"	Phone1="1000"/>
 <Unit Name="02: Bryan"		Phone1="2000"/>
