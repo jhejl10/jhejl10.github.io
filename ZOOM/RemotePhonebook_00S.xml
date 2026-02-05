@@ -3,7 +3,7 @@
 <YealinkIPPhoneBook>
 <Title>Yealink</Title>
 
-	<Menu Name="1. Store EXTs">
+	<Menu Name="1. Store Ext #">
 <Unit Name="01: Brenham"	Phone1="1000"/>
 <Unit Name="02: Bryan"		Phone1="2000"/>
 <Unit Name="03: Caldwell"	Phone1="3000"/>
@@ -52,7 +52,7 @@
 
 
 <!-- Asst Managers -->
-	<Menu Name="4. Asst. Managers">
+	<Menu Name="4. Assistant Managers">
 <Unit Name="02: Steven Zeig"		Phone1="2020" Phone2="" Phone3=""/>
 <Unit Name="02: Troy Helms"			Phone1="2030" Phone2="" Phone3=""/>
 <Unit Name="03: Joseph Lopez"		Phone1="3020" Phone2="" Phone3=""/>
