@@ -18,14 +18,14 @@
 		<contact display_name="08: Page ALL"	office_number="8999" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
 
 		<!-- Store -->
-		<contact display_name="01: Brenham"		office_number="1000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="02: Bryan"		office_number="2000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="03: Caldwell"	office_number="3000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="04: Lexington"	office_number="4000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="05: Groesbeck"	office_number="5000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="06: Mexia"		office_number="6000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="07: Buffalo"		office_number="7000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="08: Wholesale"	office_number="8000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="01: Brenham Store"		office_number="1000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="02: Bryan Store"			office_number="2000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="03: Caldwell Store"		office_number="3000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="04: Lexington Store"		office_number="4000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="05: Groesbeck Store"		office_number="5000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="06: Mexia Store"			office_number="6000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="07: Buffalo Store"		office_number="7000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="08: Wholesale Office"	office_number="8000" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
 
 		<!-- Wholesale Departments -->
 		<contact display_name="DEPT: Operator"				office_number="8001" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
@@ -65,13 +65,13 @@
 
 
 		<!-- Managers -->
-		<contact display_name="MGR: Matt Grissom" 		office_number="1010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="MGR: Nicholas Braaton"	office_number="2010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="MGR: James Pieper"		office_number="3010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="MGR: Mike Snyder"		office_number="4010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="MGR: JR Noel"			office_number="5010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="MGR: Mexia Manager"		office_number="6010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
-		<contact display_name="MGR: John White"			office_number="7010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="01 MGR: Matt Grissom" 		office_number="1010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="02 MGR: Nicholas Braaton"	office_number="2010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="03 MGR: James Pieper"		office_number="3010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="04 MGR: Mike Snyder"		office_number="4010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="05 MGR: JR Noel"			office_number="5010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="06 MGR: Mexia Manager"		office_number="6010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
+		<contact display_name="07 MGR: John White"			office_number="7010" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
 		
 		<!-- Sales Reps -->
 		<contact display_name="Anthony Blazek"			office_number="1050" mobile_number="" other_number="" line="-1" ring="Auto" default_photo="Config:Woodson.png" selected_photo="0" group_id_name="Woodson" eyepea_contact_id="" />
@@ -172,5 +172,6 @@
 
 	</root_contact>
 </vp_contact>
+
 
 
