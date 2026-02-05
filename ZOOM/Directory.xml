@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <root_favorite_set>
-    <item id_name="localdirectory" display_name="Local Directory" priority="2" enable="1" dev="common"/>
-    <item id_name="remotedirectory" display_name="Remote Directory" priority="3" enable="1" dev="common"/>
-	<item id_name="ldap" display_name="Company Directory Search" priority="1" enable="1" dev="T19 T21 T23 T40 T40G T27 T27G T29 T41 T42 T42S T41S T46 T46S T54S T52 T48 T48S T49 T61 T66 T69 T69S CP860 CP920 T54W T53W T53 T57W"/>
-    <item id_name="history" display_name="History" priority="4" enable="1" dev="common"/>
+    <item id_name="localdirectory" 	display_name="Local Directory"			priority="3" enable="0" dev="common"/>
+    <item id_name="remotedirectory"	display_name="Remote Phonebook"			priority="1" enable="1" dev="common"/>
+	<item id_name="ldap"			display_name="Company Directory"		priority="2" enable="1" dev="T19 T21 T23 T40 T40G T27 T27G T29 T41 T42 T42S T41S T46 T46S T54S T52 T48 T48S T49 T61 T66 T69 T69S CP860 CP920 T54W T53W T53 T57W"/>
+    <item id_name="history"			display_name="History"					priority="4" enable="1" dev="common"/>
     <item id_name="networkcalllog" display_name="Network Call Log" priority="5" enable="0" dev="common"/>
     <item id_name="broadsoftdirectory" display_name="Network Directory" priority="6" enable="0" dev="common"/>
 	<item id_name="plcmdirectory" display_name="Phonebook" priority="7" enable="0" />      
@@ -20,3 +20,4 @@
 	<item id_name="presencelist" display_name="Presence List" priority="18" enable="1"  />  
 	<item id_name="uc_calllog" display_name="Network CallLog" priority="19" enable="0"  />
 </root_favorite_set>
+
