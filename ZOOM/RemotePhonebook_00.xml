@@ -3,7 +3,7 @@
 <YealinkIPPhoneBook>
 <Title>Yealink</Title>
 
-	<Menu Name="A: Wholesale EXTs">
+	<Menu Name="1. Wholesale Department EXTs">
 <Unit Name="01: Operator" 				Phone1="8001"/>
 <Unit Name="02: Accounts Receivable"	Phone1="8002"/>
 <Unit Name="03: Accounts Payable"		Phone1="8003"/>
@@ -14,8 +14,10 @@
 <Unit Name="08: Purchasing"				Phone1="8008"/>
 <Unit Name="09: Sales"					Phone1="8009"/>
 <Unit Name="10: Door Shop"				Phone1="8010"/>  
-
+	</Menu>
+	
 <!-- Wholesale -->
+	<Menu Name="2. Wholesale User EXTs">
 <Unit Name="Dana Mondey"		Phone1="8101" Phone2="" Phone3=""/>
 <Unit Name="Lauren Johnson"		Phone1="8102" Phone2="" Phone3=""/>	
 <Unit Name="Ann Chapman"		Phone1="8103" Phone2="" Phone3=""/>
@@ -38,7 +40,7 @@
 <Unit Name="Philip Chapman"		Phone1="8120" Phone2="" Phone3=""/>	
 	</Menu>
 	
-	<Menu Name="B: Store EXTs">
+	<Menu Name="3. Store EXTs">
 <Unit Name="01: Brenham"	Phone1="1000"/>
 <Unit Name="02: Bryan"		Phone1="2000"/>
 <Unit Name="03: Caldwell"	Phone1="3000"/>
@@ -46,8 +48,10 @@
 <Unit Name="05: Groesbeck"	Phone1="5000"/>
 <Unit Name="06: Mexia"		Phone1="6000"/>
 <Unit Name="07: Buffalo"	Phone1="7000"/>
+	</Menu>
 
 <!-- Managers -->
+	<Menu Name="4. TEMP">
 <Unit Name="Matt Grissom"		Phone1="1010" Phone2="" Phone3=""/>
 <Unit Name="Nicholas Braaton"	Phone1="2010" Phone2="" Phone3=""/>
 <Unit Name="James Pieper"		Phone1="3010" Phone2="" Phone3=""/>	
@@ -73,7 +77,7 @@
 <Unit Name="Donna Dickson"		Phone1="7020" Phone2="" Phone3=""/>
 	</Menu>
 
-	<Menu Name="C: Employees (CELL EXT)">
+	<Menu Name="5. Employees CELL Speed Dials">
 <Unit Name="[CELL] Anthony Blazek"		Phone1="1051" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Andy Golden"			Phone1="2051" Phone2="" Phone3=""/>
 <Unit Name="[CELL] Cameron McCuller"	Phone1="3051" Phone2="" Phone3=""/>
@@ -89,5 +93,4 @@
 <Unit Name="[CELL] Mexia Manager"		Phone1="6011" Phone2="" Phone3=""/>
 <Unit Name="[CELL] John White"			Phone1="7011" Phone2="" Phone3=""/>
 	</Menu>
-
 </YealinkIPPhoneBook>
