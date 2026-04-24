@@ -39,17 +39,7 @@
 
 <Unit Name="Philip Chapman"		Phone1="8120" Phone2="" Phone3=""/>	
 	</Menu>
-	
-	<Menu Name="3. Stores">
-<Unit Name="00: Wholesale"	Phone1="8000"/>
-<Unit Name="01: Brenham"	Phone1="1000"/>
-<Unit Name="02: Bryan"		Phone1="2000"/>
-<Unit Name="03: Caldwell"	Phone1="3000"/>
-<Unit Name="04: Lexington"	Phone1="4000"/>
-<Unit Name="05: Groesbeck"	Phone1="5000"/>
-<Unit Name="06: Mexia"		Phone1="6000"/>
-<Unit Name="07: Buffalo"	Phone1="7000"/>
-	</Menu>
+
 
 
 </YealinkIPPhoneBook>
