@@ -1,0 +1,175 @@
+import React, { useMemo, useState } from "react"; import { motion } from "framer-motion"; import { Check, ChevronRight, DoorOpen, RotateCcw, Search, Wand2 } from "lucide-react"; import { Card, CardContent } from "@/components/ui/card"; import { Button } from "@/components/ui/button";
+
+const brand = { maroon: "#6b0016", };
+
+const unitTypes = [ { id: "single-prehung", label: "Single Prehung", needsHanding: true, needsJamb: true, needsBore: true, needsHinges: true }, { id: "single-slab", label: "Single Slab", needsHanding: false, needsJamb: false, needsBore: true, needsHinges: false }, { id: "double-prehung", label: "Double Prehung", needsHanding: true, needsJamb: true, needsBore: true, needsHinges: true }, { id: "double-slab", label: "Double Slab Pair", needsHanding: false, needsJamb: false, needsBore: true, needsHinges: false }, { id: "bifold", label: "Bifold", needsHanding: false, needsJamb: false, needsBore: false, needsHinges: false }, { id: "bypass", label: "Bypass / Closet Pair", needsHanding: false, needsJamb: false, needsBore: false, needsHinges: false }, ];
+
+const widths = ["10", "12", "14", "16", "18", "1T", "20", "22", "24", "26", "28", "2T", "30", "32", "34", "36"]; const heights = ["68", "70", "80"]; const thicknesses = ["1-3/8"", "1-3/4""]; const cores = [ { id: "hollow", label: "Hollow Core", note: "Lightweight molded door with honeycomb-style core." }, { id: "solid", label: "ProCore / Solid Core", note: "Better sound reduction and heavier feel." }, ];
+
+const styles = [ { id: "colonist-textured", label: "Colonist Textured", panels: "6 Panel", surface: "Textured" }, { id: "colonist-smooth", label: "Colonist Smooth", panels: "6 Panel", surface: "Smooth" }, { id: "carrara-smooth", label: "Carrara Smooth", panels: "2 Panel Square", surface: "Smooth" }, { id: "camden-textured", label: "Camden Textured", panels: "2 Panel Arch", surface: "Textured" }, { id: "conmore-smooth", label: "Conmore Smooth", panels: "5 Panel Equal", surface: "Smooth" }, { id: "madison-smooth", label: "Madison Smooth", panels: "1 Panel Flat", surface: "Smooth" }, { id: "monroe-smooth", label: "Monroe Smooth", panels: "2 Panel Square", surface: "Smooth" }, { id: "santa-fe-smooth", label: "Santa Fe Smooth", panels: "2 Panel Plank", surface: "Smooth" }, { id: "caiman-smooth", label: "Caiman Smooth", panels: "3 Panel", surface: "Smooth" }, ];
+
+const jambSizes = ["4-9/16"", "5-1/4"", "6-9/16"", "7-1/4"", "Custom"]; const jambMaterials = ["Primed Finger-Joint Pine", "MDF", "Clear Pine", "PVC / Composite", "Custom"]; const handingOptions = ["Left Hand", "Right Hand", "Left Hand Reverse", "Right Hand Reverse", "Inactive/Active Pair - LH Active", "Inactive/Active Pair - RH Active"]; const boreOptions = ["No Bore", "Single Bore", "Double Bore", "Passage", "Privacy", "Dummy Prep"]; const hingeTypes = ["Residential 3-1/2" Radius", "Residential 3-1/2" Square", "Commercial 4" Square", "Ball Bearing", "Custom"]; const hingeFinishes = ["US15 Satin Nickel", "US10B Oil Rubbed Bronze", "US26D Brushed Chrome", "US3 Bright Brass", "Black", "Custom"];
+
+function callSizeToInches(callSize) { if (!callSize) return 0; const feet = Number(callSize[0]); const inchChar = callSize[1]; const inches = inchChar === "T" ? 10 : Number(inchChar); return feet * 12 + inches; }
+
+function prettySize(width, height) { if (!width || !height) return "Not selected"; return ${width}${height} (${callSizeToInches(width)}\" x ${callSizeToInches(height)}\"); }
+
+function ChoiceCard({ selected, title, subtitle, onClick }) { return ( <button onClick={onClick} className={w-full rounded-2xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-md ${ selected ? "border-[#6b0016] bg-[#6b0016]/5 shadow-sm" : "border-slate-200 bg-white" }} > <div className="flex items-start justify-between gap-3"> <div> <div className="font-semibold text-slate-900">{title}</div> {subtitle && <div className="mt-1 text-sm text-slate-500">{subtitle}</div>} </div> {selected && <Check className="h-5 w-5 text-[#6b0016]" />} </div> </button> ); }
+
+function SelectGrid({ options, value, setValue, columns = "grid-cols-2 md:grid-cols-4" }) { return ( <div className={grid ${columns} gap-3}> {options.map((option) => { const id = typeof option === "string" ? option : option.id; const label = typeof option === "string" ? option : option.label; const sub = typeof option === "string" ? "" : option.note || [option.panels, option.surface].filter(Boolean).join(" • "); return <ChoiceCard key={id} selected={value === id || value === label} title={label} subtitle={sub} onClick={() => setValue(id || label)} />; })} </div> ); }
+
+export default function JeldWenMoldedDoorConfigurator() { const [step, setStep] = useState(0); const [config, setConfig] = useState({ brand: "JELD-WEN", series: "Molded Wood Composite", unitType: "single-prehung", width: "30", height: "68", thickness: "1-3/8"", core: "hollow", style: "colonist-smooth", jambSize: "4-9/16"", jambMaterial: "Primed Finger-Joint Pine", handing: "Left Hand", bore: "Single Bore", hingeType: "Residential 3-1/2" Radius", hingeFinish: "US15 Satin Nickel", notes: "", });
+
+const unit = unitTypes.find((u) => u.id === config.unitType) || unitTypes[0]; const selectedStyle = styles.find((s) => s.id === config.style); const selectedCore = cores.find((c) => c.id === config.core);
+
+const steps = useMemo(() => { const base = [ { id: "unit", title: "Unit Type", helper: "Start with the physical configuration because it determines whether handing, jamb, bore, and hinge choices are needed." }, { id: "size", title: "Size", helper: "Pick width and height using door-shop call sizes. T represents 10 inches, so 2T = 2'10"." }, { id: "construction", title: "Construction", helper: "Thickness and core affect weight, sound control, hinge prep, and availability." }, { id: "style", title: "Door Style", helper: "Choose the molded panel design and surface texture." }, ]; if (unit.needsJamb) base.push({ id: "jamb", title: "Jamb", helper: "Prehung units need jamb size and material after the slab size and thickness are known." }); if (unit.needsHanding) base.push({ id: "handing", title: "Handing", helper: "Handing should come after unit type and jamb decisions so the active leaf and swing are clear." }); if (unit.needsBore) base.push({ id: "bore", title: "Bore / Lock Prep", helper: "Bore prep depends on whether this is a passage, privacy, dummy, or no-bore application." }); if (unit.needsHinges) base.push({ id: "hinges", title: "Hinges", helper: "Select hinge style and finish for prehung units." }); base.push({ id: "review", title: "Review", helper: "Confirm the full door configuration before pricing or SKU matching." }); return base; }, [unit]);
+
+const current = steps[step];
+
+function update(key, value) { setConfig((prev) => ({ ...prev, [key]: value })); }
+
+function reset() { setStep(0); setConfig({ brand: "JELD-WEN", series: "Molded Wood Composite", unitType: "single-prehung", width: "30", height: "68", thickness: "1-3/8"", core: "hollow", style: "colonist-smooth", jambSize: "4-9/16"", jambMaterial: "Primed Finger-Joint Pine", handing: "Left Hand", bore: "Single Bore", hingeType: "Residential 3-1/2" Radius", hingeFinish: "US15 Satin Nickel", notes: "", }); }
+
+const summaryRows = [ ["Brand / Series", ${config.brand} ${config.series}], ["Unit Type", unit.label], ["Size", prettySize(config.width, config.height)], ["Thickness", config.thickness], ["Core", selectedCore?.label], ["Style", selectedStyle?.label], ["Jamb", unit.needsJamb ? ${config.jambSize} ${config.jambMaterial} : "Not required"], ["Handing", unit.needsHanding ? config.handing : "Not required"], ["Bore", unit.needsBore ? config.bore : "Not required"], ["Hinges", unit.needsHinges ? ${config.hingeType}, ${config.hingeFinish} : "Not required"], ];
+
+return ( <div className="min-h-screen bg-slate-50 p-4 text-slate-900 md:p-8"> <div className="mx-auto max-w-7xl"> <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end"> <div> <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-sm font-medium text-[#6b0016] shadow-sm"> <Wand2 className="h-4 w-4" /> Door Shop Wizard </div> <h1 className="text-3xl font-bold tracking-tight md:text-4xl">JELD-WEN Molded Composite Door Configurator</h1> <p className="mt-2 max-w-3xl text-slate-600">A strategic question flow for collecting the choices needed to configure a molded interior door.</p> </div> <Button variant="outline" className="rounded-2xl" onClick={reset}> <RotateCcw className="mr-2 h-4 w-4" /> Reset </Button> </div>
+
+<div className="grid gap-6 lg:grid-cols-[280px_1fr_360px]">
+      <Card className="rounded-2xl border-slate-200 shadow-sm">
+        <CardContent className="p-4">
+          <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+            <Search className="h-4 w-4" /> Steps
+          </div>
+          <div className="space-y-2">
+            {steps.map((s, index) => (
+              <button
+                key={s.id}
+                onClick={() => setStep(index)}
+                className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left transition ${
+                  index === step ? "bg-[#6b0016] text-white" : index < step ? "bg-[#6b0016]/10 text-[#6b0016]" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                <span className="font-medium">{index + 1}. {s.title}</span>
+                {index < step ? <Check className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <motion.div key={current.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
+        <Card className="min-h-[560px] rounded-2xl border-slate-200 shadow-sm">
+          <CardContent className="p-6">
+            <div className="mb-6">
+              <div className="text-sm font-semibold uppercase tracking-wide text-[#6b0016]">Step {step + 1} of {steps.length}</div>
+              <h2 className="mt-1 text-2xl font-bold">{current.title}</h2>
+              <p className="mt-2 text-slate-600">{current.helper}</p>
+            </div>
+
+            {current.id === "unit" && <SelectGrid options={unitTypes} value={config.unitType} setValue={(v) => update("unitType", v)} columns="grid-cols-1 md:grid-cols-2" />}
+
+            {current.id === "size" && (
+              <div className="space-y-8">
+                <div>
+                  <h3 className="mb-3 font-semibold">Width Call Size</h3>
+                  <SelectGrid options={widths} value={config.width} setValue={(v) => update("width", v)} />
+                </div>
+                <div>
+                  <h3 className="mb-3 font-semibold">Height Call Size</h3>
+                  <SelectGrid options={heights} value={config.height} setValue={(v) => update("height", v)} columns="grid-cols-3" />
+                </div>
+                <div className="rounded-2xl bg-slate-100 p-4 text-sm text-slate-700">Selected: <strong>{prettySize(config.width, config.height)}</strong></div>
+              </div>
+            )}
+
+            {current.id === "construction" && (
+              <div className="space-y-8">
+                <div>
+                  <h3 className="mb-3 font-semibold">Thickness</h3>
+                  <SelectGrid options={thicknesses} value={config.thickness} setValue={(v) => update("thickness", v)} columns="grid-cols-2" />
+                </div>
+                <div>
+                  <h3 className="mb-3 font-semibold">Core</h3>
+                  <SelectGrid options={cores} value={config.core} setValue={(v) => update("core", v)} columns="grid-cols-1 md:grid-cols-2" />
+                </div>
+              </div>
+            )}
+
+            {current.id === "style" && <SelectGrid options={styles} value={config.style} setValue={(v) => update("style", v)} columns="grid-cols-1 md:grid-cols-3" />}
+
+            {current.id === "jamb" && (
+              <div className="space-y-8">
+                <div>
+                  <h3 className="mb-3 font-semibold">Jamb Size</h3>
+                  <SelectGrid options={jambSizes} value={config.jambSize} setValue={(v) => update("jambSize", v)} columns="grid-cols-1 md:grid-cols-3" />
+                </div>
+                <div>
+                  <h3 className="mb-3 font-semibold">Jamb Material</h3>
+                  <SelectGrid options={jambMaterials} value={config.jambMaterial} setValue={(v) => update("jambMaterial", v)} columns="grid-cols-1 md:grid-cols-2" />
+                </div>
+              </div>
+            )}
+
+            {current.id === "handing" && <SelectGrid options={handingOptions} value={config.handing} setValue={(v) => update("handing", v)} columns="grid-cols-1 md:grid-cols-2" />}
+
+            {current.id === "bore" && <SelectGrid options={boreOptions} value={config.bore} setValue={(v) => update("bore", v)} columns="grid-cols-1 md:grid-cols-3" />}
+
+            {current.id === "hinges" && (
+              <div className="space-y-8">
+                <div>
+                  <h3 className="mb-3 font-semibold">Hinge Type</h3>
+                  <SelectGrid options={hingeTypes} value={config.hingeType} setValue={(v) => update("hingeType", v)} columns="grid-cols-1 md:grid-cols-2" />
+                </div>
+                <div>
+                  <h3 className="mb-3 font-semibold">Hinge Finish</h3>
+                  <SelectGrid options={hingeFinishes} value={config.hingeFinish} setValue={(v) => update("hingeFinish", v)} columns="grid-cols-1 md:grid-cols-3" />
+                </div>
+              </div>
+            )}
+
+            {current.id === "review" && (
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-[#6b0016]/20 bg-[#6b0016]/5 p-5">
+                  <div className="mb-2 flex items-center gap-2 font-bold text-[#6b0016]"><DoorOpen className="h-5 w-5" /> Configuration Ready</div>
+                  <p className="text-sm text-slate-700">This is the clean configuration payload that can later connect to pricing, Product Kit choices, SKU matching, image generation, or BisTrack rules.</p>
+                </div>
+                <textarea
+                  className="min-h-24 w-full rounded-2xl border border-slate-200 p-4 outline-none focus:border-[#6b0016]"
+                  placeholder="Internal notes, exceptions, or custom prep..."
+                  value={config.notes}
+                  onChange={(e) => update("notes", e.target.value)}
+                />
+                <pre className="overflow-auto rounded-2xl bg-slate-950 p-4 text-xs text-slate-100">{JSON.stringify(config, null, 2)}</pre>
+              </div>
+            )}
+
+            <div className="mt-8 flex justify-between border-t pt-5">
+              <Button variant="outline" className="rounded-2xl" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>Back</Button>
+              <Button className="rounded-2xl bg-[#6b0016] hover:bg-[#520011]" disabled={step === steps.length - 1} onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))}>Next</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <Card className="rounded-2xl border-slate-200 shadow-sm">
+        <CardContent className="p-5">
+          <div className="mb-4 flex items-center gap-2 font-bold text-slate-900"><DoorOpen className="h-5 w-5 text-[#6b0016]" /> Live Summary</div>
+          <div className="space-y-3">
+            {summaryRows.map(([label, value]) => (
+              <div key={label} className="rounded-xl bg-slate-100 p-3">
+                <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</div>
+                <div className="mt-1 font-medium text-slate-900">{value}</div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 rounded-2xl bg-white p-4 text-sm text-slate-600 shadow-sm">
+            <div className="font-semibold text-slate-900">Suggested description</div>
+            <div className="mt-2">{config.brand} {unit.label} {config.width}{config.height} {config.thickness} {selectedStyle?.label} {selectedCore?.label}</div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  </div>
+</div>
+
+); }
